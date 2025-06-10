@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}Catálogo Completo - MotoShop{% endblock %}
+
+{% block content %}
+<section class="catalog-page-section">
+    <div class="container">
+        <h1>Explora Nuestro Catálogo Completo</h1>
+        <p class="description">Descubre todas las motocicletas disponibles en nuestra tienda. Utiliza los filtros para encontrar tu moto ideal.</p>
+    </div>
+
+    <div class="full-catalog-grid">
+        {% for moto in motos %}
+        <a href="#" class="motorcycle-card">
+            <img src="{{ url_for('static', filename=moto.imagen_url) if moto.imagen_url else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ moto.nombre }}">
+            <div class="card-content">
+                <h3>{{ moto.marca }} {{ moto.modelo }}</h3>
+                <p>{{ moto.nombre }} ({{ moto.año }})</p>
+                <span class="price">${{ "{:,.2f}".format(moto.precio) }}</span>
+            </div>
+        </a>
+        {% else %}
+        <p>No hay motocicletas disponibles en el catálogo.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

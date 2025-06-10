@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mi Tienda de Motos{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include 'footer.html' %}
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script>
+        // Script para el efecto de scroll en el header
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.main-header');
+            if (window.scrollY > 50) { // Puedes ajustar este valor
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Script para el carrusel Swiper (ejemplo para index.html)
+        // Solo inicializa si el contenedor existe
+        if (document.querySelector('.swiper-container')) {
+            var mySwiper = new Swiper('.swiper-container', {
+                loop: true,
+                slidesPerView: 1, // Una tarjeta visible a la vez
+                spaceBetween: 30, // Espacio entre slides
+                grabCursor: true,
+                centeredSlides: true, // Centra el slide activo
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                    type: 'bullets', // Tipo de paginación: 'bullets', 'fraction', 'progressbar'
+                },
+                breakpoints: {
+                    // Cuando el ancho de la ventana es >= 768px
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 40,
+                    },
+                    // Cuando el ancho de la ventana es >= 1024px
+                    1024: {
+                        slidesPerView: 3,
+                        spaceBetween: 50,
+                    },
+                }
+            });
+        }
+
+        // Script para el efecto de hover en logos de marcas (brands-section)
+        const logoItems = document.querySelectorAll('.logo-item');
+        const colors = [
+            '#FF6347', '#FFD700', '#6A5ACD', '#32CD32', '#FF69B4',
+            '#4682B4', '#DA70D6', '#BDB76B', '#00CED1', '#FFA07A'
+        ]; // Puedes definir tus propios colores
+
+        logoItems.forEach((item, index) => {
+            const logoBg = document.createElement('div');
+            logoBg.classList.add('logo-bg');
+            item.prepend(logoBg); // Añade el div antes de la imagen
+
+            item.addEventListener('mouseenter', () => {
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                item.style.setProperty('--bg-color', randomColor); // Establece la variable CSS
+            });
+        });
+
+    </script>
+</body>
+</html>

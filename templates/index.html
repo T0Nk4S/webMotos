@@ -1,0 +1,198 @@
+{% extends "layout.html" %}
+
+{% block title %}MotoShop - Tu Tienda de Motocicletas{% endblock %}
+
+{% block content %}
+    <section class="hero-section">
+        <div class="container">
+            <h2>Encuentra la Moto de Tus Sueños</h2>
+            <p>Descubre nuestra exclusiva colección de motocicletas de alta gama.</p>
+            <a href="{{ url_for('catalogo_completo') }}" class="btn">Ver Catálogo</a>
+        </div>
+    </section>
+
+    <section id="catalog" class="catalog-section">
+        <div class="container">
+            <h1>Nuestro Catálogo</h1>
+            <div class="swiper-container mySwiper"> {# Agrega la clase 'mySwiper' aquí #}
+                <div class="swiper-wrapper">
+                    {% for moto in motos_carrusel %}
+                    <div class="swiper-slide">
+                        <a href="#" class="motorcycle-card">
+                            <img src="{{ url_for('static', filename=moto.imagen_url) if moto.imagen_url else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ moto.nombre }}">
+                            <div class="card-content">
+                                <h3>{{ moto.marca }} {{ moto.modelo }}</h3>
+                                <p>{{ moto.nombre }} ({{ moto.año }})</p> {# Se sugiere usar nombre y año si están disponibles #}
+                                <span class="price">${{ "{:,.2f}".format(moto.precio) }}</span>
+                            </div>
+                        </a>
+                    </div>
+                    {% else %}
+                    {# Bloque para mostrar ejemplos estáticos si no hay motos cargadas dinámicamente #}
+                    <div class="swiper-slide">
+                        <a href="#" class="motorcycle-card">
+                            <img src="{{ url_for('static', filename='images/moto1.jpg') }}" alt="Yamaha YZF-R1">
+                            <div class="card-content">
+                                <h3>Yamaha YZF-R1</h3>
+                                <p>Una superbike icónica, diseñada para la pista y la carretera.</p>
+                                <span class="price">$18,999</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="swiper-slide">
+                           <a href="#" class="motorcycle-card">
+                               <img src="{{ url_for('static', filename='images/moto2.jpg') }}" alt="Harley-Davidson Fat Boy">
+                               <div class="card-content">
+                                   <h3>Harley-Davidson Fat Boy</h3>
+                                   <p>Estilo clásico americano con un motor potente y sonido inconfundible.</p>
+                                   <span class="price">$21,499</span>
+                               </div>
+                           </a>
+                    </div>
+                    <div class="swiper-slide">
+                        <a href="#" class="motorcycle-card">
+                            <img src="{{ url_for('static', filename='images/moto3.jpg') }}" alt="Kawasaki Ninja 400">
+                            <div class="card-content">
+                                <h3>Kawasaki Ninja 400</h3>
+                                <p>Deportiva ligera, ideal para iniciarse en el mundo de las superbikes.</p>
+                                <span class="price">$6,999</span>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="swiper-pagination-wrapper">
+                    <div class="swiper-pagination"></div>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+            <div class="view-more-container">
+                <a href="{{ url_for('catalogo_completo') }}" class="btn btn-secondary">Ver Catálogo Completo</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="logos" class="logos-section">
+        <div class="container">
+            <h2>Nuestras Marcas Destacadas</h2>
+            <div class="logos-grid">
+                <div class="logo-item" data-color="#FF5733"> {# Añadido data-color para efecto JS #}
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/benelli.png') }}" alt="BENELLI">
+                </div>
+                <div class="logo-item" data-color="#007bff">
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/cfmoto.png') }}" alt="CFMOTO">
+                </div>
+                <div class="logo-item" data-color="#28a745">
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/hero.png') }}" alt="HERO">
+                </div>
+                <div class="logo-item" data-color="#6f42c1">
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/honda.png') }}" alt="HONDA">
+                </div>
+                <div class="logo-item" data-color="#dc3545">
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/kawasaki.png') }}" alt="KAWASAKI">
+                </div>
+                <div class="logo-item" data-color="#fd7e14">
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/keeway.png') }}" alt="KEEWAY">
+                </div>
+                <div class="logo-item" data-color="#17a2b8">
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/ktm.png') }}" alt="KTM">
+                </div>
+                <div class="logo-item" data-color="#e83e8c">
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/motomel.png') }}" alt="MOTOMEL">
+                </div>
+                <div class="logo-item" data-color="#20c997">
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/royalenfield.png') }}" alt="ROYAL-ENFIELD">
+                </div>
+                <div class="logo-item" data-color="#6c757d">
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/serna.png') }}" alt="SERNA">
+                </div>
+                <div class="logo-item" data-color="#0056b3">
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/supersoco.png') }}" alt="SUPERSOCO">
+                </div>
+                <div class="logo-item" data-color="#5a2e6f">
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/suzuki.png') }}" alt="SUZUKI">
+                </div>
+                <div class="logo-item" data-color="#8c2f00">
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/tvs.png') }}" alt="TVS">
+                </div>
+                <div class="logo-item" data-color="#4e4e4e">
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/um.png') }}" alt="EM">
+                </div>
+                <div class="logo-item" data-color="#934d4d">
+                    <div class="logo-bg"></div>
+                    <img src="{{ url_for('static', filename='images/logos/vespa.png') }}" alt="VESPA">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="services-section">
+        <div class="container">
+            <h1>Nuestros Servicios</h1>
+            <div class="service-grid">
+                <div class="service-item">
+                    <i class="fas fa-tools"></i>
+                    <h3>Mantenimiento y Reparación</h3>
+                    <p>Servicio técnico especializado para todas las marcas y modelos.</p>
+                </div>
+                <div class="service-item">
+                    <i class="fas fa-cogs"></i>
+                    <h3>Personalización</h3>
+                    <p>Accesorios y modificaciones para hacer tu moto única.</p>
+                </div>
+                <div class="service-item">
+                    <i class="fas fa-headset"></i>
+                    <h3>Asesoramiento Profesional</h3>
+                    <p>Expertos listos para ayudarte a elegir la moto perfecta para ti.</p>
+                </div>
+                <div class="service-item">
+                    <i class="fas fa-handshake"></i>
+                    <h3>Financiamiento Flexible</h3>
+                    <p>Opciones de pago adaptadas a tus necesidades y presupuesto.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2>Sobre Nosotros</h2>
+            <p>En MotoShop, somos apasionados por las motocicletas. Ofrecemos una selección curada de las mejores motos, junto con servicios de primera clase para garantizar tu satisfacción y la de tu máquina. Con años de experiencia en la industria, nuestro equipo está dedicado a proporcionarte no solo una motocicleta, sino una experiencia de vida.</p>
+        </div>
+    </section>
+
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2>Contáctanos</h2>
+            <p>¿Tienes preguntas o necesitas ayuda? Envíanos un mensaje o visítanos.</p>
+            <form class="contact-form">
+                <input type="text" placeholder="Tu Nombre" required>
+                <input type="email" placeholder="Tu Email" required>
+                <textarea placeholder="Tu Mensaje" rows="6" required></textarea>
+                <button type="submit" class="btn">Enviar Mensaje</button>
+            </form>
+            <div class="contact-info">
+                <p><i class="fas fa-map-marker-alt"></i> Dirección: Av. Principal 123, Ciudad MotoShop</p>
+                <p><i class="fas fa-phone"></i> Teléfono: +123 456 7890</p>
+                <p><i class="fas fa-envelope"></i> Email: info@motoshop.com</p>
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}
