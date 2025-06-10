@@ -1,53 +1,124 @@
 {% extends "layout.html" %}
 
-{% block title %}Administración de Motos - MotoShop{% endblock %}
+{% block title %}
+    {% if moto %}
+        Editar Moto: {{ moto.nombre }} - MotoShop
+    {% else %}
+        Añadir Nueva Moto - MotoShop
+    {% endif %}
+{% endblock %}
 
 {% block content %}
-<section class="admin-section container">
-    <div class="admin-header">
-        <h1>Gestión de Motocicletas</h1>
-        <a href="{{ url_for('add_moto') }}" class="btn">Añadir Nueva Moto</a>
-    </div>
+<section class="form-section container">
+    <div class="form-container">
+        <h1>
+            {% if moto %}
+                Editar Moto
+            {% else %}
+                Añadir Nueva Moto
+            {% endif %}
+        </h1>
 
-    {% if motos %}
-    <div class="table-responsive">
-        <table class="moto-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Imagen</th>
-                    <th>Nombre</th>
-                    <th>Marca</th>
-                    <th>Modelo</th>
-                    <th>Año</th>
-                    <th>Precio</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for moto in motos %}
-                <tr>
-                    <td data-label="ID:">{{ moto.id }}</td>
-                    <td data-label="Imagen:"><img src="{{ url_for('static', filename=moto.imagen_url) if moto.imagen_url else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ moto.nombre }}"></td>
-                    <td data-label="Nombre:">{{ moto.nombre }}</td>
-                    <td data-label="Marca:">{{ moto.marca }}</td>
-                    <td data-label="Modelo:">{{ moto.modelo }}</td>
-                    <td data-label="Año:">{{ moto.año }}</td>
-                    <td data-label="Precio:">${{ "{:,.2f}".format(moto.precio) }}</td>
-                    <td data-label="Acciones:" class="moto-actions">
-                        <a href="{{ url_for('edit_moto', moto_id=moto.id) }}" class="btn edit-btn">Editar</a>
-                        <form action="{{ url_for('delete_moto', moto_id=moto.id) }}" method="POST" style="display:inline;">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn delete-btn" onclick="return confirm('¿Estás seguro de que quieres eliminar esta moto?')">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.csrf_token }} {# Campo CSRF oculto para seguridad #}
+
+            <div class="form-group">
+                {{ form.nombre.label }}
+                {{ form.nombre(class_="form-control") }}
+                {% if form.nombre.errors %}
+                    <div class="help-block">
+                        {% for error in form.nombre.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.marca.label }}
+                {{ form.marca(class_="form-control") }}
+                {% if form.marca.errors %}
+                    <div class="help-block">
+                        {% for error in form.marca.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.modelo.label }}
+                {{ form.modelo(class_="form-control") }}
+                {% if form.modelo.errors %}
+                    <div class="help-block">
+                        {% for error in form.modelo.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.año.label }}
+                {{ form.año(class_="form-control", type="number") }} {# Asegura el tipo number para el input #}
+                {% if form.año.errors %}
+                    <div class="help-block">
+                        {% for error in form.año.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.precio.label }}
+                {{ form.precio(class_="form-control", type="number", step="0.01") }} {# Asegura el tipo number y paso para decimales #}
+                {% if form.precio.errors %}
+                    <div class="help-block">
+                        {% for error in form.precio.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.descripcion.label }}
+                {{ form.descripcion(class_="form-control", rows="5") }}
+                {% if form.descripcion.errors %}
+                    <div class="help-block">
+                        {% for error in form.descripcion.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.imagen.label }}
+                {{ form.imagen(class_="form-control-file") }}
+                {% if form.imagen.errors %}
+                    <div class="help-block">
+                        {% for error in form.imagen.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                {# Mostrar imagen actual si estamos editando y existe #}
+                {% if moto and moto.imagen_url %}
+                    <div class="current-image mt-3">
+                        <p>Imagen actual:</p>
+                        <img src="{{ url_for('static', filename=moto.imagen_url) }}" alt="Imagen actual de {{ moto.nombre }}" class="img-thumbnail">
+                    </div>
+                {% endif %}
+            </div>
+
+            {{ form.submit(class_="btn submit-btn") }}
+        </form>
+        <div class="mt-3 text-center">
+            <a href="{{ url_for('admin_motos') }}" class="btn btn-secondary">Volver a la Administración</a>
+        </div>
     </div>
-    {% else %}
-    <p>No hay motocicletas para administrar. ¡Añade una nueva!</p>
-    {% endif %}
 </section>
 {% endblock %}

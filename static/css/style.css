@@ -2,15 +2,18 @@
 :root {
     --primary-color: #DC143C; /* Rojo Carmesí */
     --secondary-color: #457B9D; /* Azul sereno */
-    --dark-color: #000000;      /* Negro Absoluto (para body, header, etc.) */
+    --dark-color: #000000;       /* Negro Absoluto (para body, header, etc.) */
     --opacity-color: #011229;    /* Un color oscuro opaco, como el azul petróleo */
-    --light-color: #ffffff;     /* Blanco puro (para secciones de contenido, footer, etc.) */
+    --light-color: #ffffff;      /* Blanco puro (para secciones de contenido, footer, etc.) */
 
     /* Nuevas variables para gestionar el contraste de texto/títulos */
     --text-on-light: #000000;    /* Texto negro para fondos claros */
     --text-on-dark: #F1FAEE;     /* Texto blanco crema para fondos oscuros */
     --heading-on-light: #000000; /* Títulos negros para fondos claros */
     --heading-on-dark: #F1FAEE;  /* Títulos blanco crema para fondos oscuros */
+
+    /* NUEVA VARIABLE: Para el tono oscuro del rojo carmesí para el hover en el navbar "scrolled" */
+    --darker-primary-color: #8B0022; /* Un rojo carmesí más oscuro */
 }
 
 * {
@@ -77,15 +80,19 @@ h1, h2, h3 {
     width: 100%;
     z-index: 1000; /* Asegura que esté por encima de otros elementos */
     box-shadow: none; /* Sin sombra inicialmente */
-    transition: background-color 0.4s ease, box-shadow 0.4s ease, backdrop-filter 0.4s ease;
+    transition: background-color 0.4s ease, box-shadow 0.4s ease, backdrop-filter 0.4s ease, height 0.4s ease; /* Añade 'height' a la transición */
+    height: 60px; /* Altura inicial del header */
+    display: flex; /* Añadido para centrar verticalmente el contenido */
+    align-items: center; /* Centra verticalmente el contenido */
 }
 
 /* Estilo del Header cuando se ha bajado la página */
 .main-header.scrolled {
-    background-color: rgba(0, 0, 0, 0.9); /* Fondo negro semi-transparente al hacer scroll */
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.9), var(--primary-color)); /* Degradado de negro a carmesí */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Sombra al hacer scroll */
     backdrop-filter: blur(10px); /* Ligeramente más desenfocado */
     -webkit-backdrop-filter: blur(10px);
+    height: 100px; /* Nueva altura al hacer scroll */
 }
 
 .main-header .container {
@@ -93,7 +100,7 @@ h1, h2, h3 {
     justify-content: space-between;
     align-items: center;
     padding: 0 10%;
-    height: 40px;
+    width: 100%; /* Asegura que el contenedor ocupe todo el ancho */
 }
 
 
@@ -104,18 +111,18 @@ h1, h2, h3 {
     transition: color 0.4s ease;
 }
 
-/* NUEVO: Para que 'Shop' tenga el color primario (si se usa <span> en el HTML) */
 .main-header .logo a span {
     color: var(--primary-color);
 }
 
 .main-nav ul {
     display: flex;
+    height: 100px;
 }
 
 .main-nav ul li {
     margin-left: 20px;
-    height: 40px; /* Asegura que el li ocupe toda la altura disponible del nav */
+    height: 100%; /* Ahora ocupa el 100% de la altura del nav/header */
     display: flex;
     justify-content: center; /* Centra horizontalmente el contenido (enlace) */
     align-items: center; /* Centra verticalmente el contenido (enlace) */
@@ -124,7 +131,7 @@ h1, h2, h3 {
     background: transparent; /* Asegura que no tenga un color de fondo base */
 }
 
-/* Pseudo-elemento para el degradado que aparecerá en el hover */
+/* Pseudo-elemento para el degradado que aparecerá en el hover (estado inicial) */
 .main-nav ul li::before {
     content: '';
     position: absolute;
@@ -132,10 +139,9 @@ h1, h2, h3 {
     left: 0;
     width: 100%;
     height: 100%;
-    /* Degradado de negro a rojo (o tu --primary-color) */
     background: linear-gradient(to bottom, var(--dark-color), var(--primary-color));
     opacity: 0; /* Inicialmente invisible */
-    transition: opacity 0.3s ease; /* Transición suave para la opacidad */
+    transition: opacity 0.3s ease, background 0.3s ease; /* Añade transición para el background */
     z-index: 0; /* Asegura que esté detrás del texto del enlace */
 }
 
@@ -143,10 +149,17 @@ h1, h2, h3 {
     opacity: 1; /* Hace el degradado visible al pasar el ratón */
 }
 
+/* Estilo para el pseudo-elemento cuando el header está scrolled */
+.main-header.scrolled .main-nav ul li::before {
+    background: linear-gradient(to bottom, var(--darker-primary-color), var(--darker-primary-color));
+}
+
+
 .main-nav ul li a {
     color: var(--text-on-dark); /* Letras blanco crema (más visibles) */
     font-weight: bold;
-    transition: color 0.4s ease;
+    font-size: 1rem; /* Tamaño de fuente inicial para las opciones */
+    transition: color 0.4s ease, font-size 0.4s ease; /* Añade font-size a la transición */
     position: relative; /* Necesario para asegurar que el enlace esté por encima del degradado */
     z-index: 1; /* Asegura que el texto esté por encima del pseudo-elemento */
     padding: 0 5px; /* Pequeño padding para que el fondo no se pegue al texto */
@@ -161,6 +174,16 @@ h1, h2, h3 {
 .main-header.scrolled .main-nav ul li a {
     color: var(--text-on-dark); /* Se mantienen blanco crema sobre el fondo sólido */
 }
+
+/* NUEVO: Aumenta el tamaño de la fuente de las opciones cuando el header está scrolled */
+.main-header.scrolled .main-nav ul li a {
+    font-size: 1.2rem; /* Nuevo tamaño de fuente más grande al hacer scroll */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
 
 /* Secciones Generales */
 section {
@@ -835,6 +858,10 @@ section {
     .main-header {
         backdrop-filter: blur(5px); /* Ligeramente menos desenfoque en móvil */
         -webkit-backdrop-filter: blur(5px);
+        height: 60px; /* Altura inicial en móviles/tablets */
+    }
+    .main-header.scrolled {
+        height: 80px; /* Altura al hacer scroll en móviles/tablets */
     }
     .hero-section {
         height: 600px;
@@ -894,6 +921,10 @@ section {
     .main-header {
         backdrop-filter: blur(3px); /* Menos desenfoque en móviles */
         -webkit-backdrop-filter: blur(3px);
+        height: 50px; /* Altura inicial en móviles muy pequeños */
+    }
+    .main-header.scrolled {
+        height: 70px; /* Altura al hacer scroll en móviles muy pequeños */
     }
     .hero-section {
         height: 500px;

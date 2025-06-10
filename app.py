@@ -101,6 +101,63 @@ def add_moto():
 
     return render_template('add_edit_moto.html', form=form, moto=None)
 
+# --- RUTA PARA EDITAR MOTOS ---
+@app.route('/edit-moto/<int:moto_id>', methods=['GET', 'POST'])
+def edit_moto(moto_id):
+    # Obtiene la moto por ID, o devuelve 404 si no existe
+    moto = db.session.get(Moto, moto_id)
+    if not moto:
+        flash(f'La moto con ID {moto_id} no fue encontrada.', 'danger')
+        return redirect(url_for('admin_motos'))
+
+    form = MotoForm(obj=moto) # Pre-rellena el formulario con los datos de la moto existente
+
+    if form.validate_on_submit():
+        # Lógica para manejar la subida de una nueva imagen si se proporciona
+        if form.imagen.data:
+            if allowed_file(form.imagen.data.filename):
+                filename = secure_filename(form.imagen.data.filename)
+                os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                form.imagen.data.save(file_path)
+                moto.imagen_url = f'images/uploads/{filename}'
+            else:
+                flash('Tipo de archivo no permitido para la nueva imagen.', 'danger')
+                return render_template('add_edit_moto.html', form=form, moto=moto)
+
+        # Actualiza los campos de la moto con los datos del formulario
+        moto.nombre = form.nombre.data
+        moto.marca = form.marca.data
+        moto.modelo = form.modelo.data
+        moto.año = form.año.data
+        moto.precio = form.precio.data
+        moto.descripcion = form.descripcion.data
+        # Si no se subió una nueva imagen, imagen_url mantiene su valor anterior
+
+        db.session.commit()
+        flash('¡Moto actualizada exitosamente!', 'success')
+        return redirect(url_for('admin_motos'))
+
+    # Si es una petición GET o el formulario no es válido, muestra el formulario de edición
+    return render_template('add_edit_moto.html', form=form, moto=moto)
+
+# --- RUTA PARA ELIMINAR MOTOS ---
+@app.route('/delete-moto/<int:moto_id>', methods=['POST'])
+def delete_moto(moto_id):
+    # Obtiene la moto por ID, o devuelve 404 si no existe
+    moto = db.session.get(Moto, moto_id)
+    if not moto:
+        flash(f'La moto con ID {moto_id} no fue encontrada.', 'danger')
+        return redirect(url_for('admin_motos'))
+
+    # Elimina la moto de la base de datos
+    db.session.delete(moto)
+    db.session.commit()
+    flash('¡Moto eliminada exitosamente!', 'success')
+
+    # Redirige de vuelta a la página de administración
+    return redirect(url_for('admin_motos'))
+
 # --- Inicio de la Aplicación ---
 if __name__ == '__main__':
     with app.app_context():
