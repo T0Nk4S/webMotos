@@ -93,7 +93,9 @@ h1, h2, h3 {
     justify-content: space-between;
     align-items: center;
     padding: 0 10%;
+    height: 40px;
 }
+
 
 .main-header .logo a {
     color: var(--text-on-dark); /* Letras blanco crema (más visibles) */
@@ -113,7 +115,7 @@ h1, h2, h3 {
 
 .main-nav ul li {
     margin-left: 20px;
-    height: 100px; /* Asegura que el li ocupe toda la altura disponible del nav */
+    height: 40px; /* Asegura que el li ocupe toda la altura disponible del nav */
     display: flex;
     justify-content: center; /* Centra horizontalmente el contenido (enlace) */
     align-items: center; /* Centra verticalmente el contenido (enlace) */
@@ -129,7 +131,7 @@ h1, h2, h3 {
     top: 0;
     left: 0;
     width: 100%;
-    height: 75%;
+    height: 100%;
     /* Degradado de negro a rojo (o tu --primary-color) */
     background: linear-gradient(to bottom, var(--dark-color), var(--primary-color));
     opacity: 0; /* Inicialmente invisible */
