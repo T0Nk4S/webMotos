@@ -2,9 +2,9 @@
 :root {
     --primary-color: #DC143C; /* Rojo Carmesí */
     --secondary-color: #457B9D; /* Azul sereno */
-    --dark-color: #000000;       /* Negro Absoluto (para body, header, etc.) */
+    --dark-color: #000000;      /* Negro Absoluto (para body, header, etc.) */
     --opacity-color: #011229;    /* Un color oscuro opaco, como el azul petróleo */
-    --light-color: #ffffff;      /* Blanco puro (para secciones de contenido, footer, etc.) */
+    --light-color: #ffffff;     /* Blanco puro (para secciones de contenido, footer, etc.) */
 
     /* Nuevas variables para gestionar el contraste de texto/títulos */
     --text-on-light: #000000;    /* Texto negro para fondos claros */
@@ -70,7 +70,8 @@ h1, h2, h3 {
 
 /* Header */
 .main-header {
-    background-color: transparent; /* Inicialmente transparente */
+    /* Fondo inicial del navbar (degradado de oscuro a carmesí) */
+    background: linear-gradient(to right, var(--dark-color), var(--darker-primary-color));
     backdrop-filter: blur(8px); /* Efecto de desenfoque */
     -webkit-backdrop-filter: blur(8px); /* Para compatibilidad con Safari */
     color: #fff; /* El texto del header es blanco por defecto */
@@ -80,15 +81,17 @@ h1, h2, h3 {
     width: 100%;
     z-index: 1000; /* Asegura que esté por encima de otros elementos */
     box-shadow: none; /* Sin sombra inicialmente */
-    transition: background-color 0.4s ease, box-shadow 0.4s ease, backdrop-filter 0.4s ease, height 0.4s ease; /* Añade 'height' a la transición */
-    height: 60px; /* Altura inicial del header */
-    display: flex; /* Añadido para centrar verticalmente el contenido */
-    align-items: center; /* Centra verticalmente el contenido */
+    /* Transición para el fondo, sombra, desenfoque y ALTURA */
+    transition: background-color 0.4s ease, box-shadow 0.4s ease, backdrop-filter 0.4s ease, height 0.4s ease;
+    height: 50px; /* Altura inicial del header */
+    display: flex;
+    align-items: center; /* Centra el contenido verticalmente */
 }
 
 /* Estilo del Header cuando se ha bajado la página */
 .main-header.scrolled {
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.9), var(--primary-color)); /* Degradado de negro a carmesí */
+    /* Degradado de negro a carmesí al hacer scroll */
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.9), var(--primary-color));
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Sombra al hacer scroll */
     backdrop-filter: blur(10px); /* Ligeramente más desenfocado */
     -webkit-backdrop-filter: blur(10px);
@@ -100,12 +103,11 @@ h1, h2, h3 {
     justify-content: space-between;
     align-items: center;
     padding: 0 10%;
-    width: 100%; /* Asegura que el contenedor ocupe todo el ancho */
+    width: 100%;
 }
 
-
 .main-header .logo a {
-    color: var(--text-on-dark); /* Letras blanco crema (más visibles) */
+    color: var(--text-on-dark);
     font-size: 1.8rem;
     font-weight: bold;
     transition: color 0.4s ease;
@@ -117,71 +119,91 @@ h1, h2, h3 {
 
 .main-nav ul {
     display: flex;
-    height: 100px;
+    height: 50px;
+}
+
+.main-nav ul.scrolled:hover {
+    /* Degradado de negro a carmesí al hacer scroll */
+    backdrop-filter: blur(10px); /* Ligeramente más desenfocado */
+    height: 100px; /* Nueva altura al hacer scroll */
 }
 
 .main-nav ul li {
     margin-left: 20px;
-    height: 100%; /* Ahora ocupa el 100% de la altura del nav/header */
+    /* CLAVE: El LI se ajusta al 100% de la altura de su padre (UL) */
+    height: 100%;
     display: flex;
-    justify-content: center; /* Centra horizontalmente el contenido (enlace) */
-    align-items: center; /* Centra verticalmente el contenido (enlace) */
-    position: relative; /* Necesario para el pseudo-elemento del degradado */
-    overflow: hidden; /* Oculta partes del degradado antes del hover */
-    background: transparent; /* Asegura que no tenga un color de fondo base */
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    /* Importante para que el ::before no se desborde visualmente si fuera más grande */
+    overflow: hidden;
+    background: transparent;
 }
 
-/* Pseudo-elemento para el degradado que aparecerá en el hover (estado inicial) */
+/* Pseudo-elemento (el fondo del hover) que aparecerá */
 .main-nav ul li::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
+    /* CLAVE: Ocupa el 100% del ancho y alto del LI (que se adapta al navbar) */
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, var(--dark-color), var(--primary-color));
-    opacity: 0; /* Inicialmente invisible */
-    transition: opacity 0.3s ease, background 0.3s ease; /* Añade transición para el background */
+    /* Degradado para el estado inicial (no scrolled) */
+    opacity: 0; /* INICIALMENTE INVISIBLE (solo aparece en hover) */
+    /* Transiciones para suavidad en opacidad y color de fondo */
+    transition: opacity 0.3s ease, background 0.3s ease;
     z-index: 0; /* Asegura que esté detrás del texto del enlace */
 }
 
+/* Efecto al pasar el cursor sobre la opción de navegación */
 .main-nav ul li:hover::before {
+    background: linear-gradient(var(--darker-primary-color), var(--darker-primary-color));
     opacity: 1; /* Hace el degradado visible al pasar el ratón */
 }
 
-/* Estilo para el pseudo-elemento cuando el header está scrolled */
+/* Estilo del pseudo-elemento cuando el header está en estado 'scrolled' */
 .main-header.scrolled .main-nav ul li::before {
+    /* CLAVE: Cambia el degradado al tono más oscuro para el estado 'scrolled' */
     background: linear-gradient(to bottom, var(--darker-primary-color), var(--darker-primary-color));
+    opacity: 0; /* Sigue siendo INVISIBLE por defecto (solo aparece en hover) */
+    /* Su altura y anchura siguen siendo 100% de su padre (li), que ahora es más alto */
+}
+
+/* Efecto al pasar el cursor sobre la opción de navegación CUANDO EL HEADER ESTÁ SCROLLED */
+.main-header.scrolled .main-nav ul li:hover::before {
+    opacity: 1; /* Se vuelve visible al pasar el cursor (con el nuevo degradado oscuro) */
 }
 
 
 .main-nav ul li a {
-    color: var(--text-on-dark); /* Letras blanco crema (más visibles) */
+    color: var(--text-on-dark);
     font-weight: bold;
     font-size: 1rem; /* Tamaño de fuente inicial para las opciones */
-    transition: color 0.4s ease, font-size 0.4s ease; /* Añade font-size a la transición */
-    position: relative; /* Necesario para asegurar que el enlace esté por encima del degradado */
+    transition: color 0.4s ease, font-size 0.4s ease;
+    position: relative;
     z-index: 1; /* Asegura que el texto esté por encima del pseudo-elemento */
-    padding: 0 5px; /* Pequeño padding para que el fondo no se pegue al texto */
+    padding: 0 5px;
 }
 
 .main-nav ul li a:hover {
     color: var(--text-on-dark); /* Mantén el color del texto blanco/crema sobre el degradado oscuro */
 }
 
-/* Las letras se mantienen blancas/crema cuando el header esté scrolled (esto sigue siendo válido) */
+/* Las letras se mantienen blancas/crema cuando el header esté scrolled */
 .main-header.scrolled .logo a,
 .main-header.scrolled .main-nav ul li a {
     color: var(--text-on-dark); /* Se mantienen blanco crema sobre el fondo sólido */
 }
 
-/* NUEVO: Aumenta el tamaño de la fuente de las opciones cuando el header está scrolled */
+/* Aumenta el tamaño de la fuente de las opciones cuando el header está scrolled */
 .main-header.scrolled .main-nav ul li a {
     font-size: 1.2rem; /* Nuevo tamaño de fuente más grande al hacer scroll */
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    height: 100%; /* Asegura que el enlace ocupe toda la altura del LI */
 }
 
 
@@ -194,12 +216,11 @@ section {
 /* Hero Section (fondo de imagen, texto claro) */
 .hero-section {
     background: url('../images/banner.jpg') no-repeat center center/cover;
-    color: var(--text-on-dark); /* Texto blanco/crema */
+    color: var(--text-on-dark);
     width: 100%;
-    /* MODIFICADO: Ajustado para que el banner empiece desde la parte superior de la ventana */
-    height: 100vh; /* Ocupa el 100% del alto de la ventana del navegador */
-    padding-top: 0; /* No necesita padding-top si el navbar es transparente y superpuesto */
-    padding-bottom: 150px; /* Puedes ajustar este valor si quieres más espacio en la parte inferior */
+    height: 100vh;
+    padding-top: 0; /* El padding-top del body ya maneja el espacio para el fixed header */
+    padding-bottom: 150px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
     display: flex;
     flex-direction: column;
@@ -211,40 +232,36 @@ section {
 .hero-section h2 {
     font-size: 3rem;
     margin-bottom: 20px;
-    color: var(--heading-on-dark); /* Título blanco/crema */
+    color: var(--heading-on-dark);
 }
 
 .hero-section p {
     font-size: 1.2rem;
     margin-bottom: 30px;
-    color: var(--text-on-dark); /* Párrafo blanco/crema */
+    color: var(--text-on-dark);
 }
 
 /* Catálogo (Ahora con carrusel) */
 .catalog-section h1 {
     margin-bottom: 40px;
     font-size: 50px;
-    color: var(--heading-on-light); /* Título negro para fondo claro */
+    color: var(--heading-on-light);
 }
 
-/* NUEVA REGLA CRUCIAL */
 .catalog-section .container {
-    position: relative; /* Para posicionar las flechas absolutamente respecto a este contenedor */
+    position: relative;
 }
 
-/* El .motorcycle-grid ya no se usará directamente para el layout del carrusel */
-/* Se mantiene para otras posibles grillas o si se cambia la funcionalidad */
 .motorcycle-grid {
     gap: 20px;
     margin-top: 40px;
 }
 
-/* Estilo de las tarjetas de motocicletas (usadas dentro de Swiper) */
 .motorcycle-card {
     position: relative;
     display: block;
     width: 100%;
-    height: 450px; /* **AJUSTADO: Altura más razonable para el carrusel** */
+    height: 450px;
     border-radius: 10px;
     overflow: hidden;
     text-decoration: none;
@@ -255,7 +272,7 @@ section {
 
 .motorcycle-card:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4); /* Sombra aún más oscura al pasar el ratón */
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
 }
 
 .motorcycle-card img {
@@ -279,33 +296,33 @@ section {
     left: 0;
     width: 100%;
     padding: 20px;
-    background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.1)); /* Gradiente oscuro para el texto */
-    color: #fff; /* Texto blanco */
+    background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.1));
+    color: #fff;
     text-align: left;
     z-index: 2;
     transition: background 0.3s ease;
 }
 
 .motorcycle-card:hover .card-content {
-    background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.2)); /* Más oscuro al pasar el ratón */
+    background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.2));
 }
 
 .motorcycle-card .card-content h3 {
-    color: #fff; /* Título blanco */
+    color: #fff;
     font-size: 1.8rem;
     margin-bottom: 5px;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
 }
 
 .motorcycle-card .card-content p {
-    color: #ccc; /* Párrafo gris claro */
+    color: #ccc;
     font-size: 1rem;
     margin-bottom: 10px;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
 }
 
 .motorcycle-card .card-content .price {
-    color: var(--primary-color); /* Precio en carmesí */
+    color: var(--primary-color);
     font-size: 1.4rem;
     font-weight: bold;
     display: block;
@@ -320,15 +337,14 @@ section {
 /* --- ESTILOS ESPECÍFICOS DE SWIPER.JS (CARRUSEL) --- */
 .swiper-container {
     width: 100%;
-    height: auto; /* Mantener auto, pero el contenido dentro definirá la altura */
+    height: auto;
     overflow: hidden;
     margin-top: 50px;
     padding-bottom: 20px;
     position: relative;
-    /* Añadir un padding horizontal para asegurar que las flechas puedan sobresalir ligeramente */
-    padding-left: 50px; /* Suficiente espacio para la flecha izquierda */
-    padding-right: 50px; /* Suficiente espacio para la flecha derecha */
-    box-sizing: border-box; /* Asegura que el padding no aumente el ancho total */
+    padding-left: 50px;
+    padding-right: 50px;
+    box-sizing: border-box;
 }
 
 .swiper-slide {
@@ -338,7 +354,6 @@ section {
     height: auto;
 }
 
-/* Estilos para las flechas de navegación del carrusel (Swiper) */
 .swiper-button-next,
 .swiper-button-prev {
     color: var(--text-on-dark) !important;
@@ -356,47 +371,43 @@ section {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* Ajusta la posición de las flechas con respecto al contenedor */
-    /* Ahora estarán dentro del padding del swiper-container, pero visualmente al borde */
-    margin: 0; /* Asegura que no tengan márgenes adicionales */
+    margin: 0;
 }
 
 
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-    transform: translateY(-50%) scale(1.1); /* Ligeramente más grande al pasar el ratón */
-    background-color: rgba(0, 0, 0, 0.9); /* Más opaco al pasar el ratón */
+    transform: translateY(-50%) scale(1.1);
+    background-color: rgba(0, 0, 0, 0.9);
 }
 
 .swiper-button-prev {
-    left: 0; /* Posiciona al inicio del padding */
+    left: 0;
 }
 
 .swiper-button-next {
-    right: 0; /* Posiciona al final del padding */
+    right: 0;
     left: auto !important;
 }
 
-/* NUEVO CONTENEDOR PARA LA PAGINACIÓN */
 .swiper-pagination-wrapper {
     width: 100%;
     text-align: center;
-    margin-top: 30px; /* Ajusta este valor para subir o bajar el bloque completo de la paginación */
+    margin-top: 30px;
     position: relative;
-    z-index: 11; /* Asegura que la paginación esté por encima del carrusel y las flechas */
+    z-index: 11;
 }
 
-/* Estilos para la paginación (ahora barras, posicionado fuera del carrusel) */
 .swiper-pagination {
-    position: static !important; /* Resetea el posicionamiento de Swiper */
-    bottom: auto !important; /* Resetea el bottom si Swiper lo establece */
-    top: auto !important; /* Resetea el top si Swiper lo establece */
+    position: static !important;
+    bottom: auto !important;
+    top: auto !important;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 30px;
-    width: auto; /* Ancho automático para que se ajuste a las barras */
-    margin: 0 auto; /* Centrar las barras horizontalmente */
+    width: auto;
+    margin: 0 auto;
 }
 
 .swiper-pagination-bullet {
@@ -420,86 +431,83 @@ section {
 /* Nueva Sección de Marcas (Logos) */
 .brands-section {
     padding: 80px 0;
-    background-color: var(--light-color); /* Ahora el contenedor principal es blanco */
+    background-color: var(--light-color);
     text-align: center;
-    color: var(--text-on-light); /* Texto negro */
+    color: var(--text-on-light);
 }
 
 .brands-section h2 {
     margin-bottom: 50px;
     font-size: 2.5rem;
-    color: var(--heading-on-light); /* Título negro para fondo claro */
+    color: var(--heading-on-light);
 }
 
 .logos-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr); /* 5 COLUMNAS FIJAS */
-    gap: 0; /* SIN ESPACIO ENTRE LOGOS */
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
     justify-content: center;
     align-items: center;
-    max-width: 1000px; /* Ancho máximo para la cuadrícula de logos */
-    margin: 0 auto; /* Centra la cuadrícula de logos */
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Sombra suave para el recuadro general blanco */
-    background-color: var(--light-color); /* Blanco */
+    max-width: 1000px;
+    margin: 0 auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background-color: var(--light-color);
 }
 
 .logo-item {
-    background-color: transparent; /* Fondo inicial transparente */
+    background-color: transparent;
     padding: 20px;
-    height: 150px; /* Altura fija para cada cuadro de logo */
-    position: relative; /* Importante para posicionar el logo-bg */
+    height: 150px;
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transición solo para transform y shadow del contenedor */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .logo-item img {
     max-width: 80%;
     max-height: 80%;
     object-fit: contain;
-    filter: grayscale(100%) opacity(70%); /* Logos en escala de grises y un poco opacos inicialmente */
-    position: relative; /* Asegura que la imagen esté sobre el fondo */
-    z-index: 2; /* Mayor z-index para la imagen */
+    filter: grayscale(100%) opacity(70%);
+    position: relative;
+    z-index: 2;
     transition: filter 0.3s ease, transform 0.3s ease;
 }
 
-/* **ESTILOS PARA EL RECTÁNGULO DE FONDO (.logo-bg)** */
 .logo-item .logo-bg {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: transparent; /* Inicialmente transparente */
-    z-index: 1; /* Detrás de la imagen */
-    transform: scale(0); /* Inicialmente oculto (escala 0) */
-    border-radius: 5px; /* Ligeramente redondeado para el fondo */
+    background-color: transparent;
+    z-index: 1;
+    transform: scale(0);
+    border-radius: 5px;
     transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-/* **EFECTO DE RESALTADO AL PASAR EL RATÓN** */
 .logo-item:hover {
-    transform: translateY(-5px) scale(1.05); /* Ligeramente levantado y agrandado */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Sombra al pasar el ratón (oscura para fondo blanco) */
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 .logo-item:hover img {
-    filter: grayscale(0%) opacity(100%); /* Color original y opacidad completa */
-    transform: scale(1.1); /* Zoom sutil en el logo */
+    filter: grayscale(0%) opacity(100%);
+    transform: scale(1.1);
 }
 
-/* **ACTIVAR EL FONDO DE COLOR AL HACER HOVER** */
 .logo-item:hover .logo-bg {
-    transform: scale(1); /* Se hace visible (escala 1) */
-    background-color: var(--bg-color); /* Usa la variable CSS establecida por JS */
+    transform: scale(1);
+    background-color: var(--bg-color);
 }
 
 /* Servicios */
 .services-section h1 {
-    color: var(--heading-on-light); /* Título negro para fondo claro */
+    color: var(--heading-on-light);
     font-size: 50px;
 }
 .service-grid {
@@ -510,50 +518,50 @@ section {
 }
 
 .service-item {
-    background-color: #f0f0f0; /* Un gris muy suave para los items de servicio para que resalten */
+    background-color: #f0f0f0;
     border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra más suave */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     padding: 30px;
     transition: transform 0.3s ease;
-    color: var(--text-on-light); /* Texto negro */
+    color: var(--text-on-light);
 }
 
 .service-item:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Sombra ligeramente más oscura al pasar el ratón */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .service-item i {
     font-size: 3rem;
-    color: var(--primary-color); /* Iconos en carmesí */
+    color: var(--primary-color);
     margin-bottom: 20px;
 }
 
 .service-item h3 {
     font-size: 1.8rem;
     margin-bottom: 10px;
-    color: var(--heading-on-light); /* Título negro */
+    color: var(--heading-on-light);
 }
 
 .service-item p {
     font-size: 1rem;
-    color: var(--text-on-light); /* Párrafo negro */
+    color: var(--text-on-light);
 }
 
 /* Sobre Nosotros */
 .about-section h2 {
-    color: var(--heading-on-light); /* Título negro */
+    color: var(--heading-on-light);
 }
 .about-section p {
-    color: var(--text-on-light); /* Texto negro */
+    color: var(--text-on-light);
 }
 
 /* Contacto */
 .contact-section h2 {
-    color: var(--heading-on-light); /* Título negro */
+    color: var(--heading-on-light);
 }
 .contact-section p {
-    color: var(--text-on-light); /* Texto negro */
+    color: var(--text-on-light);
 }
 .contact-form {
     max-width: 600px;
@@ -568,11 +576,11 @@ section {
 .contact-form textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ccc; /* Borde más claro para fondo claro */
+    border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 1rem;
-    background-color: #eee; /* Fondo más claro para los campos */
-    color: var(--text-on-light); /* Texto de entrada negro */
+    background-color: #eee;
+    color: var(--text-on-light);
 }
 
 .contact-form textarea {
@@ -582,7 +590,7 @@ section {
 .contact-info {
     margin-top: 30px;
     font-size: 1.1rem;
-    color: var(--text-on-light); /* Texto de contacto negro */
+    color: var(--text-on-light);
 }
 
 .contact-info p {
@@ -591,16 +599,16 @@ section {
 
 .contact-info i {
     margin-right: 10px;
-    color: var(--primary-color); /* Iconos de contacto en carmesí */
+    color: var(--primary-color);
 }
 
 /* Footer */
 .main-footer {
-    background-color: var(--dark-color); /* Vuelve a ser oscuro */
-    color: var(--text-on-dark); /* Texto blanco/crema */
+    background-color: var(--dark-color);
+    color: var(--text-on-dark);
     padding: 30px 0;
     text-align: center;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5); /* Sombra hacia arriba */
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .main-footer .social-links {
@@ -608,29 +616,29 @@ section {
 }
 
 .main-footer .social-links a {
-    color: var(--text-on-dark); /* Íconos blancos/crema */
+    color: var(--text-on-dark);
     font-size: 1.5rem;
     margin: 0 10px;
     transition: color 0.3s ease;
 }
 
 .main-footer .social-links a:hover {
-    color: var(--primary-color); /* Redes sociales en carmesí al pasar el ratón */
+    color: var(--primary-color);
 }
 
 /* --- ESTILOS PARA LA PÁGINA DE CATÁLOGO COMPLETO (`catalogo_completo.html`) --- */
 .catalog-page-section {
-    padding-top: 120px; /* Asegura espacio para el header fijo */
+    padding-top: 120px;
     text-align: center;
-    background-color: var(--dark-color); /* Fondo blanco */
-    color: var(--light-color); /* Texto negro */
-    min-height: calc(100vh - 150px); /* Para que el footer no se pegue si hay poco contenido */
+    background-color: var(--light-color);
+    color: var(--text-on-light);
+    min-height: calc(100vh - 150px);
 }
 
 .catalog-page-section h1 {
     margin-bottom: 20px;
     font-size: 50px;
-    color: var(--light-color);
+    color: var(--heading-on-light);
 }
 
 .catalog-page-section .description {
@@ -643,37 +651,33 @@ section {
 
 .full-catalog-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 280px para tarjetas de tamaño medio */
-    gap: 30px; /* Espacio entre las tarjetas */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
     margin-top: 40px;
 }
 
-/* Reutilizando estilos de .motorcycle-card del carrusel para el catálogo completo */
 .full-catalog-grid .motorcycle-card {
-    height: 400px; /* Ajusta la altura para la vista de cuadrícula */
-    /* Otros estilos como border-radius, box-shadow, transitions ya están definidos arriba */
+    height: 400px;
 }
 
-/* Asegura que el texto dentro de la tarjeta de catálogo completo sea legible */
 .full-catalog-grid .motorcycle-card .card-content {
     background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.1));
     color: #fff;
 }
 
-/* Estilos específicos para el párrafo de descripción en el catálogo completo para que se vea bien */
 .full-catalog-grid .motorcycle-card .card-content p {
     color: #ccc;
-    font-size: 0.95rem; /* Ligeramente más pequeño para la descripción en la cuadrícula */
-    margin-bottom: 5px; /* Menos margen para la descripción */
+    font-size: 0.95rem;
+    margin-bottom: 5px;
 }
 
 /* --- ESTILOS PARA LA PÁGINA DE ADMINISTRACIÓN DE MOTOS (`admin_motos.html`) --- */
 .admin-section {
-    padding-top: 120px; /* Espacio para el header fijo */
-    min-height: calc(100vh - 150px); /* Altura mínima para que el footer no se pegue */
+    padding-top: 120px;
+    min-height: calc(100vh - 150px);
     background-color: var(--light-color);
     color: var(--text-on-light);
-    text-align: left; /* Alineación de texto por defecto para esta sección */
+    text-align: left;
 }
 .admin-header {
     display: flex;
@@ -717,7 +721,7 @@ section {
     border-radius: 5px;
 }
 .moto-actions {
-    white-space: nowrap; /* Evita que los botones se rompan en múltiples líneas */
+    white-space: nowrap;
 }
 .moto-actions a, .moto-actions button {
     display: inline-block;
@@ -731,14 +735,14 @@ section {
     border: none;
 }
 .moto-actions .edit-btn {
-    background-color: #28a745; /* Verde */
+    background-color: #28a745;
     color: #fff;
 }
 .moto-actions .edit-btn:hover {
     background-color: #218838;
 }
 .moto-actions .delete-btn {
-    background-color: #dc3545; /* Rojo */
+    background-color: #dc3545;
     color: #fff;
 }
 .moto-actions .delete-btn:hover {
@@ -747,8 +751,8 @@ section {
 
 /* Mensajes flash */
 .flash-messages {
-    margin-bottom: 20px; /* Espacio antes del contenido */
-    text-align: center; /* Centrar mensajes */
+    margin-bottom: 20px;
+    text-align: center;
 }
 .alert {
     padding: 15px;
@@ -756,7 +760,7 @@ section {
     border: 1px solid transparent;
     border-radius: 4px;
     font-size: 1rem;
-    display: inline-block; /* Para que el div se ajuste al contenido y se pueda centrar */
+    display: inline-block;
     max-width: 600px;
 }
 .alert-success {
@@ -776,7 +780,7 @@ section {
     min-height: calc(100vh - 150px);
     background-color: var(--light-color);
     color: var(--text-on-light);
-    text-align: center; /* Centra el contenedor del formulario */
+    text-align: center;
 }
 .form-container {
     max-width: 600px;
@@ -785,7 +789,7 @@ section {
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    text-align: left; /* El texto dentro del formulario se alinea a la izquierda */
+    text-align: left;
 }
 .form-container h1 {
     text-align: center;
@@ -856,7 +860,7 @@ section {
 /* Media Queries para Responsividad */
 @media (max-width: 768px) {
     .main-header {
-        backdrop-filter: blur(5px); /* Ligeramente menos desenfoque en móvil */
+        backdrop-filter: blur(5px);
         -webkit-backdrop-filter: blur(5px);
         height: 60px; /* Altura inicial en móviles/tablets */
     }
@@ -872,7 +876,7 @@ section {
 
     /* Media queries para logos */
     .logos-grid {
-        grid-template-columns: repeat(3, 1fr); /* 3 columnas en tablets */
+        grid-template-columns: repeat(3, 1fr);
     }
     .logo-item {
         height: 120px;
@@ -886,14 +890,14 @@ section {
     /* Media query para carrusel en tablets */
     .swiper-button-next,
     .swiper-button-prev {
-        font-size: 2rem !important; /* Flechas más pequeñas en tablets */
-        left: -30px !important; /* Ajuste para tablets */
+        font-size: 2rem !important;
+        left: -30px !important;
         right: -30px !important;
     }
 
     /* Media Queries para el catálogo completo en tablets */
     .full-catalog-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 2 columnas en pantallas medianas */
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 20px;
     }
 
@@ -919,12 +923,12 @@ section {
 
 @media (max-width: 480px) {
     .main-header {
-        backdrop-filter: blur(3px); /* Menos desenfoque en móviles */
+        backdrop-filter: blur(3px);
         -webkit-backdrop-filter: blur(3px);
-        height: 50px; /* Altura inicial en móviles muy pequeños */
+        height: 50px;
     }
     .main-header.scrolled {
-        height: 70px; /* Altura al hacer scroll en móviles muy pequeños */
+        height: 70px;
     }
     .hero-section {
         height: 500px;
@@ -935,15 +939,15 @@ section {
     .main-nav ul {
         flex-direction: column; /* Apila los elementos del menú en móvil */
         align-items: center;
-        margin-top: 10px; /* Espacio para que no se pegue al logo */
+        margin-top: 10px;
     }
     .main-nav ul li {
-        margin: 5px 0; /* Espacio vertical entre items de menú */
+        margin: 5px 0;
     }
 
     /* Media queries para logos */
     .logos-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 columnas en móviles */
+        grid-template-columns: repeat(2, 1fr);
     }
     .logo-item {
         height: 100px;
@@ -957,31 +961,31 @@ section {
     /* Media query para carrusel en móviles */
     .swiper-button-next,
     .swiper-button-prev {
-        font-size: 1.8rem !important; /* Flechas más pequeñas en móviles */
-        top: 40%; /* Ajuste vertical si el contenido es más pequeño */
-        left: -10px !important; /* Ajuste para móviles, más cerca del borde */
+        font-size: 1.8rem !important;
+        top: 40%;
+        left: -10px !important;
         right: -10px !important;
-        width: 40px; /* Tamaño más pequeño para el fondo del botón */
+        width: 40px;
         height: 40px;
     }
     .swiper-pagination {
-        bottom: 5px !important; /* Asegura que los puntos no estén muy pegados abajo */
+        bottom: 5px !important;
     }
 
     /* Media Queries para el catálogo completo en móviles */
     .full-catalog-grid {
-        grid-template-columns: 1fr; /* 1 columna en móviles */
+        grid-template-columns: 1fr;
         gap: 15px;
     }
 
     /* Media queries para tablas de admin en móviles */
     .moto-table, .moto-table thead, .moto-table tbody, .moto-table th, .moto-table td, .moto-table tr {
-        display: block; /* Hace que la tabla sea "stackable" */
+        display: block;
     }
     .moto-table thead tr {
         position: absolute;
         top: -9999px;
-        left: -9999px; /* Oculta el encabezado de la tabla */
+        left: -9999px;
     }
     .moto-table tr {
         border: 1px solid #ccc;
@@ -992,7 +996,7 @@ section {
     .moto-table td {
         border: none;
         position: relative;
-        padding-left: 50%; /* Espacio para la pseudo-columna del encabezado */
+        padding-left: 50%;
         text-align: right;
     }
     .moto-table td:before {
@@ -1004,10 +1008,9 @@ section {
         white-space: nowrap;
         text-align: left;
         font-weight: bold;
-        content: attr(data-label); /* Usa el atributo data-label para el encabezado */
+        content: attr(data-label);
         color: var(--secondary-color);
     }
-    /* Añadir data-label a las celdas en admin_motos.html */
     .moto-table td:nth-of-type(1):before { content: "ID:"; }
     .moto-table td:nth-of-type(2):before { content: "Imagen:"; }
     .moto-table td:nth-of-type(3):before { content: "Nombre:"; }
@@ -1015,10 +1018,10 @@ section {
     .moto-table td:nth-of-type(5):before { content: "Modelo:"; }
     .moto-table td:nth-of-type(6):before { content: "Año:"; }
     .moto-table td:nth-of-type(7):before { content: "Precio:"; }
-    .moto-table td:nth-of-type(8):before { content: "Acciones:"; } /* Acciones también necesita pseudo-etiqueta */
+    .moto-table td:nth-of-type(8):before { content: "Acciones:"; }
 
     .moto-table td img {
-        width: 100px; /* Imagen más grande en móviles */
+        width: 100px;
         height: 75px;
     }
 }

@@ -38,6 +38,16 @@
                 header.classList.remove('scrolled');
             }
         });
+        
+        // Script para el efecto de scroll en el ul
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('ul');
+            if (window.scrollY > 50) { // Puedes ajustar este valor
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
 
         // Script para el carrusel Swiper (ejemplo para index.html)
         // Solo inicializa si el contenedor existe
