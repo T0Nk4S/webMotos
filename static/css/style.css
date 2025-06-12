@@ -25,90 +25,98 @@
 body {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
-    color: var(--text-on-dark); /* El texto por defecto del body es claro sobre fondo oscuro */
+    color: var(--text-on-dark);
+    background-color: var(--light-color); /* Fondo por defecto más claro para el contenido principal */
 }
 
 a {
     text-decoration: none;
-    color: var(--primary-color); /* Los enlaces seguirán siendo carmesí */
+    color: var(--primary-color);
 }
 
 ul {
     list-style: none;
 }
 
-/* Ajustes para H1, H2, H3 - por defecto serán claros, pero se anularán en secciones claras */
 h1, h2, h3 {
-    color: var(--heading-on-dark);
+    color: var(--heading-on-dark); /* Por defecto oscuros, serán sobreescritos en secciones claras */
     margin-bottom: 15px;
 }
 
 /* Botones */
 .btn {
     display: inline-block;
-    background: var(--primary-color); /* Botones primarios en carmesí */
+    background: var(--primary-color);
     color: #fff;
-    padding: 10px 20px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+    padding: 10px 25px; /* Aumentado padding para un mejor tacto */
+    border-radius: 8px; /* Ligeramente más redondeado */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     border: none;
     cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .btn:hover {
-    background-color: #A90E30; /* Un carmesí más oscuro al pasar el ratón */
+    background-color: var(--darker-primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
 .btn-secondary {
     background-color: var(--secondary-color);
-    color: var(--text-on-dark); /* Asegura que el texto sea visible en este botón (si se usa en un fondo oscuro) */
+    color: var(--text-on-dark);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .btn-secondary:hover {
-    background-color: #366585; /* Ajusta este color si cambias --secondary-color */
+    background-color: #366585;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
 /* Header */
 .main-header {
-    /* Fondo inicial del navbar (degradado de oscuro a carmesí) */
     background: linear-gradient(to right, var(--dark-color), var(--darker-primary-color));
-    backdrop-filter: blur(8px); /* Efecto de desenfoque */
-    -webkit-backdrop-filter: blur(8px); /* Para compatibilidad con Safari */
-    color: #fff; /* El texto del header es blanco por defecto */
-    position: fixed; /* Mantiene el header fijo en la parte superior */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fff;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 1000; /* Asegura que esté por encima de otros elementos */
-    box-shadow: none; /* Sin sombra inicialmente */
-    /* Transición para el fondo, sombra, desenfoque y ALTURA */
+    z-index: 1000;
+    box-shadow: none;
     transition: background-color 0.4s ease, box-shadow 0.4s ease, backdrop-filter 0.4s ease, height 0.4s ease;
-    height: 50px; /* Altura inicial del header */
+    height: 80px; /* Altura inicial del header un poco más grande */
     display: flex;
-    align-items: center; /* Centra el contenido verticalmente */
+    align-items: center;
 }
 
 /* Estilo del Header cuando se ha bajado la página */
 .main-header.scrolled {
-    /* Degradado de negro a carmesí al hacer scroll */
     background: linear-gradient(to right, rgba(0, 0, 0, 0.9), var(--primary-color));
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Sombra al hacer scroll */
-    backdrop-filter: blur(10px); /* Ligeramente más desenfocado */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    height: 100px; /* Nueva altura al hacer scroll */
+    height: 60px; /* Nueva altura al hacer scroll, un poco más compacta */
 }
 
 .main-header .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 10%;
+    padding: 0 5%; /* Padding lateral adaptado */
     width: 100%;
+    max-width: 1200px; /* Ancho máximo para el contenido del header */
+    margin: 0 auto;
 }
 
 .main-header .logo a {
     color: var(--text-on-dark);
-    font-size: 1.8rem;
+    font-size: 2rem; /* Tamaño de logo ligeramente más grande */
     font-weight: bold;
     transition: color 0.4s ease;
 }
@@ -119,93 +127,68 @@ h1, h2, h3 {
 
 .main-nav ul {
     display: flex;
-    height: 50px;
-}
-
-.main-nav ul.scrolled:hover {
-    /* Degradado de negro a carmesí al hacer scroll */
-    backdrop-filter: blur(10px); /* Ligeramente más desenfocado */
-    height: 100px; /* Nueva altura al hacer scroll */
+    height: 100%;
 }
 
 .main-nav ul li {
-    margin-left: 20px;
-    /* CLAVE: El LI se ajusta al 100% de la altura de su padre (UL) */
+    margin-left: 30px; /* Espacio entre items */
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
-    /* Importante para que el ::before no se desborde visualmente si fuera más grande */
     overflow: hidden;
     background: transparent;
 }
 
-/* Pseudo-elemento (el fondo del hover) que aparecerá */
 .main-nav ul li::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
-    /* CLAVE: Ocupa el 100% del ancho y alto del LI (que se adapta al navbar) */
     width: 100%;
     height: 100%;
-    /* Degradado para el estado inicial (no scrolled) */
-    opacity: 0; /* INICIALMENTE INVISIBLE (solo aparece en hover) */
-    /* Transiciones para suavidad en opacidad y color de fondo */
+    opacity: 0;
     transition: opacity 0.3s ease, background 0.3s ease;
-    z-index: 0; /* Asegura que esté detrás del texto del enlace */
+    z-index: 0;
 }
 
-/* Efecto al pasar el cursor sobre la opción de navegación */
 .main-nav ul li:hover::before {
-    background: linear-gradient(var(--darker-primary-color), var(--darker-primary-color));
-    opacity: 1; /* Hace el degradado visible al pasar el ratón */
+    background: rgba(var(--primary-color), 0.2); /* Fondo semi-transparente en hover normal */
+    opacity: 1;
 }
 
-/* Estilo del pseudo-elemento cuando el header está en estado 'scrolled' */
-.main-header.scrolled .main-nav ul li::before {
-    /* CLAVE: Cambia el degradado al tono más oscuro para el estado 'scrolled' */
-    background: linear-gradient(to bottom, var(--darker-primary-color), var(--darker-primary-color));
-    opacity: 0; /* Sigue siendo INVISIBLE por defecto (solo aparece en hover) */
-    /* Su altura y anchura siguen siendo 100% de su padre (li), que ahora es más alto */
-}
-
-/* Efecto al pasar el cursor sobre la opción de navegación CUANDO EL HEADER ESTÁ SCROLLED */
 .main-header.scrolled .main-nav ul li:hover::before {
-    opacity: 1; /* Se vuelve visible al pasar el cursor (con el nuevo degradado oscuro) */
+    background: var(--primary-color); /* Fondo sólido carmesí en hover scrolled */
+    opacity: 1;
 }
-
 
 .main-nav ul li a {
     color: var(--text-on-dark);
     font-weight: bold;
-    font-size: 1rem; /* Tamaño de fuente inicial para las opciones */
+    font-size: 1.1rem;
     transition: color 0.4s ease, font-size 0.4s ease;
     position: relative;
-    z-index: 1; /* Asegura que el texto esté por encima del pseudo-elemento */
-    padding: 0 5px;
+    z-index: 1;
+    padding: 0 10px;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    display: flex;
 }
 
 .main-nav ul li a:hover {
-    color: var(--text-on-dark); /* Mantén el color del texto blanco/crema sobre el degradado oscuro */
+    color: var(--text-on-dark);
 }
 
-/* Las letras se mantienen blancas/crema cuando el header esté scrolled */
 .main-header.scrolled .logo a,
 .main-header.scrolled .main-nav ul li a {
-    color: var(--text-on-dark); /* Se mantienen blanco crema sobre el fondo sólido */
+    color: var(--text-on-dark);
 }
 
-/* Aumenta el tamaño de la fuente de las opciones cuando el header está scrolled */
 .main-header.scrolled .main-nav ul li a {
-    font-size: 1.2rem; /* Nuevo tamaño de fuente más grande al hacer scroll */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%; /* Asegura que el enlace ocupe toda la altura del LI */
+    font-size: 1rem; /* Nuevo tamaño de fuente más pequeño al hacer scroll */
 }
-
 
 /* Secciones Generales */
 section {
@@ -213,138 +196,73 @@ section {
     text-align: center;
 }
 
-/* Hero Section (fondo de imagen, texto claro) */
+/* Hero Section */
 .hero-section {
     background: url('../images/banner.jpg') no-repeat center center/cover;
     color: var(--text-on-dark);
     width: 100%;
     height: 100vh;
-    padding-top: 0; /* El padding-top del body ya maneja el espacio para el fixed header */
-    padding-bottom: 150px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+    padding-top: 80px; /* Ajusta por la altura inicial del header */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-}
-
-.hero-section h2 {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    color: var(--heading-on-dark);
-}
-
-.hero-section p {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-    color: var(--text-on-dark);
-}
-
-/* Catálogo (Ahora con carrusel) */
-.catalog-section h1 {
-    margin-bottom: 40px;
-    font-size: 50px;
-    color: var(--heading-on-light);
-}
-
-.catalog-section .container {
     position: relative;
+    z-index: 1; /* Asegura que esté por encima del contenido que pueda ir debajo */
 }
 
-.motorcycle-grid {
-    gap: 20px;
-    margin-top: 40px;
-}
-
-.motorcycle-card {
-    position: relative;
-    display: block;
-    width: 100%;
-    height: 450px;
-    border-radius: 10px;
-    overflow: hidden;
-    text-decoration: none;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    background-color: #000;
-}
-
-.motorcycle-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
-}
-
-.motorcycle-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.hero-section::before {
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 1;
-    transition: transform 0.3s ease;
-}
-
-.motorcycle-card:hover img {
-    transform: scale(1.05);
-}
-
-.motorcycle-card .card-content {
-    position: absolute;
-    bottom: 0;
-    left: 0;
     width: 100%;
-    padding: 20px;
-    background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.1));
-    color: #fff;
-    text-align: left;
-    z-index: 2;
-    transition: background 0.3s ease;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Overlay oscuro para mejor legibilidad */
+    z-index: -1;
 }
 
-.motorcycle-card:hover .card-content {
-    background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.2));
+.hero-section h2 {
+    font-size: 3.5rem; /* Más grande */
+    margin-bottom: 25px;
+    color: var(--heading-on-dark);
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.9);
 }
 
-.motorcycle-card .card-content h3 {
-    color: #fff;
-    font-size: 1.8rem;
-    margin-bottom: 5px;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+.hero-section p {
+    font-size: 1.3rem; /* Más grande */
+    margin-bottom: 40px;
+    color: var(--text-on-dark);
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
 }
 
-.motorcycle-card .card-content p {
-    color: #ccc;
-    font-size: 1rem;
-    margin-bottom: 10px;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+/* Catálogo (Ahora con carrusel) */
+.catalog-section {
+    background-color: var(--light-color); /* Fondo claro para esta sección */
+    color: var(--text-on-light);
 }
 
-.motorcycle-card .card-content .price {
-    color: var(--primary-color);
-    font-size: 1.4rem;
-    font-weight: bold;
-    display: block;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
-}
-
-.view-more-container {
-    margin-top: 50px;
-    text-align: center;
+.catalog-section h1 {
+    margin-bottom: 40px;
+    font-size: 3rem; /* Tamaño adaptado */
+    color: var(--heading-on-light);
 }
 
 /* --- ESTILOS ESPECÍFICOS DE SWIPER.JS (CARRUSEL) --- */
 .swiper-container {
     width: 100%;
     height: auto;
-    overflow: hidden;
+    overflow: hidden; /* Importante para que no haya desbordamiento */
     margin-top: 50px;
-    padding-bottom: 20px;
+    padding-bottom: 40px; /* Espacio para paginación */
     position: relative;
-    padding-left: 50px;
-    padding-right: 50px;
+    padding-left: 20px; /* Padding interno para que las flechas no se superpongan */
+    padding-right: 20px;
     box-sizing: border-box;
+    max-width: 1200px; /* Ancho máximo para el carrusel */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .swiper-slide {
@@ -352,44 +270,120 @@ section {
     justify-content: center;
     align-items: center;
     height: auto;
+    padding: 10px; /* Espacio dentro del slide para el card */
 }
 
+.motorcycle-card {
+    position: relative;
+    display: flex;
+    flex-direction: column; /* Cambiado a columna */
+    width: 100%;
+    max-width: 350px; /* Ancho máximo para cada tarjeta */
+    height: 480px; /* Altura fija para uniformidad */
+    border-radius: 15px; /* Más redondeado */
+    overflow: hidden;
+    text-decoration: none;
+    background-color: #1a1a1a; /* Fondo oscuro para la tarjeta */
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Sombra más pronunciada */
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.motorcycle-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+}
+
+.motorcycle-card img {
+    width: 100%;
+    height: 60%; /* Imagen ocupa 60% de la altura de la tarjeta */
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.motorcycle-card:hover img {
+    transform: scale(1.08);
+}
+
+.motorcycle-card .card-content {
+    position: relative; /* Ya no absoluto, para fluir debajo de la imagen */
+    flex-grow: 1; /* Ocupa el espacio restante */
+    padding: 20px;
+    background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.7)); /* Degradado oscuro */
+    color: #fff;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Alinear contenido al final */
+}
+
+.motorcycle-card .card-content h3 {
+    color: var(--primary-color); /* Título de la moto en color primario */
+    font-size: 1.7rem;
+    margin-bottom: 8px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+}
+
+.motorcycle-card .card-content p {
+    color: #e0e0e0; /* Color de texto ligeramente más claro */
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+.motorcycle-card .card-content .price {
+    color: var(--secondary-color); /* Precio en color secundario para contraste */
+    font-size: 1.6rem;
+    font-weight: bold;
+    display: block;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    margin-top: auto; /* Empuja el precio hacia abajo si hay espacio */
+}
+
+.view-more-container {
+    margin-top: 60px;
+    text-align: center;
+}
+
+/* Flechas de Navegación Swiper */
 .swiper-button-next,
 .swiper-button-prev {
-    color: var(--text-on-dark) !important;
-    font-size: 2.5rem !important;
-    transition: transform 0.3s ease, background-color 0.3s ease;
+    color: var(--light-color) !important; /* Flechas blancas */
+    font-size: 3rem !important; /* Flechas más grandes */
+    transition: transform 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
     top: 50%;
     transform: translateY(-50%);
     position: absolute;
     z-index: 20 !important;
-
-    background-color: rgba(99, 99, 99, 0.986);
-    border-radius: 10%;
-    width: 50px !important;
-    height: 100px !important;
+    background-color: rgba(0, 0, 0, 0.6); /* Fondo semi-transparente oscuro */
+    border-radius: 50%; /* Redondeado completamente */
+    width: 60px !important; /* Tamaño de botón más grande */
+    height: 60px !important;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0;
+    margin: 0 10px; /* Margen para separar de los bordes */
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
-
 
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-    transform: translateY(-50%) scale(1.1);
-    background-color: rgba(0, 0, 0, 0.9);
+    transform: translateY(-50%) scale(1.05);
+    background-color: rgba(0, 0, 0, 0.9); /* Más oscuro al hover */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
 }
 
 .swiper-button-prev {
-    left: 0;
+    left: 0; /* Pegado al borde izquierdo */
 }
 
 .swiper-button-next {
-    right: 0;
-    left: auto !important;
+    right: 0; /* Pegado al borde derecho */
+    left: auto !important; /* Sobreescribe cualquier 'left' previo */
 }
 
+/* Paginación Swiper */
 .swiper-pagination-wrapper {
     width: 100%;
     text-align: center;
@@ -412,31 +406,32 @@ section {
 
 .swiper-pagination-bullet {
     background-color: #bbb !important;
-    opacity: 0.8;
+    opacity: 0.7;
     border-radius: 5px !important;
-    width: 25px !important;
-    height: 8px !important;
-    margin: 0 4px !important;
-    transition: width 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
+    width: 10px !important; /* Más pequeños y circulares por defecto */
+    height: 10px !important;
+    margin: 0 6px !important;
+    transition: width 0.3s ease, background-color 0.3s ease, opacity 0.3s ease, border-radius 0.3s ease;
 }
 
 .swiper-pagination-bullet-active {
     background-color: var(--primary-color) !important;
     opacity: 1;
-    width: 40px !important;
+    width: 25px !important; /* Se expande horizontalmente al estar activo */
+    border-radius: 5px; /* Mantiene bordes ligeramente redondeados */
 }
 /* --- FIN ESTILOS ESPECÍFICOS DE SWIPER.JS --- */
 
 
 /* Nueva Sección de Marcas (Logos) */
-.brands-section {
+.logos-section {
     padding: 80px 0;
     background-color: var(--light-color);
     text-align: center;
     color: var(--text-on-light);
 }
 
-.brands-section h2 {
+.logos-section h2 {
     margin-bottom: 50px;
     font-size: 2.5rem;
     color: var(--heading-on-light);
@@ -444,11 +439,11 @@ section {
 
 .logos-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Más flexible para diferentes pantallas */
     gap: 0;
     justify-content: center;
     align-items: center;
-    max-width: 1000px;
+    max-width: 1200px; /* Ancho máximo aumentado */
     margin: 0 auto;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     background-color: var(--light-color);
@@ -506,81 +501,109 @@ section {
 }
 
 /* Servicios */
+.services-section {
+    background-color: var(--dark-color); /* Fondo oscuro para servicios */
+    color: var(--text-on-dark);
+}
+
 .services-section h1 {
-    color: var(--heading-on-light);
-    font-size: 50px;
+    color: var(--heading-on-dark);
+    font-size: 3rem;
 }
 .service-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Más espacio para las tarjetas */
     gap: 30px;
     margin-top: 40px;
 }
 
 .service-item {
-    background-color: #f0f0f0;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    transition: transform 0.3s ease;
-    color: var(--text-on-light);
+    background-color: #222; /* Fondo más oscuro para las tarjetas de servicio */
+    border-radius: 12px; /* Más redondeado */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+    padding: 35px; /* Más padding */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: var(--text-on-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .service-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
 }
 
 .service-item i {
-    font-size: 3rem;
+    font-size: 3.5rem; /* Iconos más grandes */
     color: var(--primary-color);
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .service-item h3 {
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-    color: var(--heading-on-light);
+    font-size: 2rem; /* Títulos más grandes */
+    margin-bottom: 15px;
+    color: var(--heading-on-dark);
 }
 
 .service-item p {
-    font-size: 1rem;
-    color: var(--text-on-light);
+    font-size: 1.1rem; /* Texto más grande */
+    color: var(--text-on-dark);
 }
 
 /* Sobre Nosotros */
+.about-section {
+    background-color: var(--light-color); /* Fondo claro */
+    color: var(--text-on-light);
+}
 .about-section h2 {
     color: var(--heading-on-light);
+    font-size: 3rem;
 }
 .about-section p {
     color: var(--text-on-light);
+    max-width: 800px;
+    margin: 0 auto;
+    font-size: 1.1rem;
+    line-height: 1.8;
 }
 
 /* Contacto */
+.contact-section {
+    background-color: var(--dark-color); /* Fondo oscuro */
+    color: var(--text-on-dark);
+}
 .contact-section h2 {
-    color: var(--heading-on-light);
+    color: var(--heading-on-dark);
+    font-size: 3rem;
 }
 .contact-section p {
-    color: var(--text-on-light);
+    color: var(--text-on-dark);
+    font-size: 1.1rem;
 }
 .contact-form {
-    max-width: 600px;
+    max-width: 700px; /* Formulario un poco más ancho */
     margin: 40px auto;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 20px; /* Más espacio entre campos */
+    background-color: #222; /* Fondo del formulario */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
 
 .contact-form input[type="text"],
 .contact-form input[type="email"],
 .contact-form textarea {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-    background-color: #eee;
-    color: var(--text-on-light);
+    padding: 15px; /* Más padding */
+    border: 1px solid #444; /* Borde más oscuro */
+    border-radius: 8px; /* Más redondeado */
+    font-size: 1.1rem; /* Texto más grande */
+    background-color: #333; /* Fondo de los campos */
+    color: var(--text-on-dark); /* Texto claro en los campos */
 }
 
 .contact-form textarea {
@@ -589,16 +612,16 @@ section {
 
 .contact-info {
     margin-top: 30px;
-    font-size: 1.1rem;
-    color: var(--text-on-light);
+    font-size: 1.2rem; /* Texto más grande */
+    color: var(--text-on-dark);
 }
 
 .contact-info p {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .contact-info i {
-    margin-right: 10px;
+    margin-right: 15px; /* Más espacio */
     color: var(--primary-color);
 }
 
@@ -606,19 +629,19 @@ section {
 .main-footer {
     background-color: var(--dark-color);
     color: var(--text-on-dark);
-    padding: 30px 0;
+    padding: 40px 0; /* Más padding */
     text-align: center;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .main-footer .social-links {
-    margin-top: 20px;
+    margin-top: 25px;
 }
 
 .main-footer .social-links a {
     color: var(--text-on-dark);
-    font-size: 1.5rem;
-    margin: 0 10px;
+    font-size: 1.8rem; /* Iconos más grandes */
+    margin: 0 12px;
     transition: color 0.3s ease;
 }
 
@@ -637,7 +660,7 @@ section {
 
 .catalog-page-section h1 {
     margin-bottom: 20px;
-    font-size: 50px;
+    font-size: 3rem;
     color: var(--heading-on-light);
 }
 
@@ -647,29 +670,60 @@ section {
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
+    color: var(--text-on-light);
 }
 
 .full-catalog-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
+    display: grid; /* Cambiado a grid para mejor control */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Columnas responsivas */
+    gap: 30px; /* Espacio entre tarjetas */
     margin-top: 40px;
+    justify-content: center;
+    padding: 0 20px; /* Padding para que no se pegue a los bordes */
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .full-catalog-grid .motorcycle-card {
-    height: 400px;
+    height: 450px; /* Altura ligeramente ajustada */
+    background-color: #fff; /* Fondo blanco para las tarjetas del catálogo */
+    color: var(--text-on-light);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Sombra más sutil que en el carrusel */
+}
+
+.full-catalog-grid .motorcycle-card img {
+    height: 60%; /* Imagen sigue ocupando 60% */
 }
 
 .full-catalog-grid .motorcycle-card .card-content {
-    background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.1));
-    color: #fff;
+    background: #fff; /* Fondo blanco sólido para el contenido */
+    color: var(--text-on-light);
+    padding-top: 15px; /* Espacio superior */
+    padding-bottom: 15px;
+    text-align: left;
+    box-shadow: none; /* Sin sombra interna */
+}
+
+.full-catalog-grid .motorcycle-card .card-content h3 {
+    color: var(--primary-color); /* Título en carmesí */
+    text-shadow: none;
+    font-size: 1.6rem;
 }
 
 .full-catalog-grid .motorcycle-card .card-content p {
-    color: #ccc;
+    color: #666; /* Texto más oscuro */
     font-size: 0.95rem;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+    text-shadow: none;
 }
+
+.full-catalog-grid .motorcycle-card .card-content .price {
+    color: var(--secondary-color);
+    font-size: 1.5rem;
+    text-shadow: none;
+}
+
 
 /* --- ESTILOS PARA LA PÁGINA DE ADMINISTRACIÓN DE MOTOS (`admin_motos.html`) --- */
 .admin-section {
@@ -678,6 +732,8 @@ section {
     background-color: var(--light-color);
     color: var(--text-on-light);
     text-align: left;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 .admin-header {
     display: flex;
@@ -695,11 +751,13 @@ section {
     margin-top: 30px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     background-color: #fff;
+    overflow-x: auto; /* Permite el scroll horizontal en tablas */
 }
 .moto-table th, .moto-table td {
     border: 1px solid #ddd;
     padding: 12px 15px;
     text-align: left;
+    vertical-align: middle; /* Alineación vertical */
 }
 .moto-table th {
     background-color: var(--secondary-color);
@@ -725,14 +783,11 @@ section {
 }
 .moto-actions a, .moto-actions button {
     display: inline-block;
-    margin-right: 5px;
-    padding: 6px 10px;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    text-align: center;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
+    margin-right: 8px; /* Más espacio entre botones */
+    padding: 8px 12px; /* Más padding */
+    border-radius: 6px; /* Más redondeado */
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 .moto-actions .edit-btn {
     background-color: #28a745;
@@ -740,6 +795,7 @@ section {
 }
 .moto-actions .edit-btn:hover {
     background-color: #218838;
+    transform: translateY(-1px);
 }
 .moto-actions .delete-btn {
     background-color: #dc3545;
@@ -747,6 +803,7 @@ section {
 }
 .moto-actions .delete-btn:hover {
     background-color: #c82333;
+    transform: translateY(-1px);
 }
 
 /* Mensajes flash */
@@ -762,6 +819,7 @@ section {
     font-size: 1rem;
     display: inline-block;
     max-width: 600px;
+    margin: 0 auto; /* Centrar alerts */
 }
 .alert-success {
     color: #155724;
@@ -787,15 +845,15 @@ section {
     margin: 0 auto;
     background-color: #fff;
     padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     text-align: left;
 }
 .form-container h1 {
     text-align: center;
     margin-bottom: 30px;
     color: var(--heading-on-light);
-    font-size: 2rem;
+    font-size: 2.2rem;
 }
 .form-group {
     margin-bottom: 20px;
@@ -811,217 +869,434 @@ section {
 .form-group input[type="email"],
 .form-group textarea {
     width: 100%;
-    padding: 12px;
+    padding: 14px; /* Más padding */
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 8px; /* Más redondeado */
     font-size: 1rem;
-    background-color: #eee;
+    background-color: #f5f5f5; /* Fondo de campos más claro */
     color: var(--text-on-light);
 }
 .form-group textarea {
     resize: vertical;
-    min-height: 100px;
+    min-height: 120px; /* Altura mínima de textarea */
 }
 .form-group .form-control-file {
     border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: #eee;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #f5f5f5;
 }
 .form-group .help-block {
-    color: red;
+    color: #dc3545; /* Color de error */
     font-size: 0.9em;
     margin-top: 5px;
 }
 .submit-btn {
     width: 100%;
-    padding: 12px;
-    font-size: 1.1rem;
+    padding: 14px;
+    font-size: 1.2rem;
     margin-top: 20px;
 }
 .current-image {
-    margin-top: 10px;
+    margin-top: 15px;
     text-align: center;
+    border: 1px dashed #ddd;
+    padding: 10px;
+    border-radius: 8px;
+}
+.current-image p {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #555;
 }
 .current-image img {
     max-width: 200px;
     height: auto;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 /* --- ESTILOS PARA CATALOGO (`catalogo_completo.html`) --- */
 
 .catalog-page-section .container{
-    display: grid;
+    display: block; /* Vuelve a ser block para que el form y el grid se organicen verticalmente */
 }
 
-/* Media Queries para Responsividad */
+/* Estilos para el formulario de filtro */
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Más espacio entre elementos */
+    margin-bottom: 50px;
+    background-color: #f0f0f0; /* Fondo más claro */
+    padding: 30px; /* Más padding */
+    border-radius: 12px; /* Más redondeado */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Sombra más definida */
+    justify-content: center;
+    align-items: flex-end;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    color: var(--text-on-light);
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 180px; /* Ancho mínimo un poco mayor */
+    flex: 1;
+}
+
+.filter-group.price-range {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px; /* Más espacio entre inputs de precio */
+    width: 100%;
+    flex: none;
+}
+
+.filter-group.price-range input {
+    flex: 1;
+    min-width: 0;
+}
+
+.filter-group label {
+    margin-bottom: 10px; /* Más espacio */
+    font-weight: bold;
+    color: var(--text-on-light);
+    text-align: left;
+    font-size: 1.05rem;
+}
+
+.filter-form input[type="text"],
+.filter-form input[type="number"],
+.filter-form select {
+    padding: 12px 18px; /* Más padding */
+    border: 1px solid #ccc; /* Borde más suave */
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #fff;
+    color: var(--text-on-light);
+    width: 100%;
+}
+
+.filter-group.price-range span {
+    font-weight: bold;
+    color: var(--text-on-light);
+    font-size: 1.1rem;
+}
+
+.filter-form .btn {
+    padding: 12px 30px; /* Botones más grandes */
+    font-size: 1.1rem;
+    border-radius: 8px;
+    margin-top: 10px;
+    flex-shrink: 0;
+}
+
+.filter-form .clear-filters-btn {
+    background-color: #6c757d;
+}
+
+.filter-form .clear-filters-btn:hover {
+    background-color: #5a6268;
+}
+
+/* Estilos para Paginación */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+    gap: 12px; /* Más espacio entre botones */
+    flex-wrap: wrap;
+}
+
+.pagination-link {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 20px; /* Más padding */
+    background-color: #f0f0f0;
+    color: var(--primary-color);
+    border: 1px solid #ddd;
+    border-radius: 8px; /* Más redondeado */
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    min-width: 45px; /* Ancho mínimo para números de página */
+    height: 45px; /* Altura fija para uniformidad */
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-link:hover:not(.disabled) {
+    background-color: var(--primary-color);
+    color: var(--text-on-dark);
+    transform: translateY(-3px); /* Efecto de elevación más notorio */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+}
+
+.pagination-link.active {
+    background-color: var(--primary-color);
+    color: var(--light-color);
+    border-color: var(--primary-color);
+    font-weight: bold;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.pagination-link.disabled {
+    opacity: 0.5; /* Más opaco para indicar deshabilitado */
+    cursor: not-allowed;
+    background-color: #e9ecef;
+    color: #6c757d;
+    box-shadow: none;
+    transform: none;
+}
+
+/* Estilos para la Página de Detalle de Moto */
+.moto-detail-section {
+    padding: 120px 0; /* Ajusta el padding superior para el fixed header */
+    background-color: var(--light-color);
+    color: var(--text-on-light);
+    min-height: calc(100vh - 150px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: left;
+}
+
+.moto-detail-section .container {
+    max-width: 950px; /* Ancho máximo un poco mayor */
+    padding: 0 25px; /* Más padding lateral */
+}
+
+.detail-card {
+    background-color: #fff;
+    border-radius: 18px; /* Más redondeado */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.detail-image {
+    flex: 1;
+    min-height: 350px; /* Altura mínima para la imagen en móviles */
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.detail-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.detail-content {
+    flex: 1;
+    padding: 35px; /* Más padding */
+}
+
+.detail-content h1 {
+    font-size: 3rem; /* Más grande */
+    color: var(--heading-on-light);
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.detail-content .moto-name,
+.detail-content .moto-year {
+    font-size: 1.3rem; /* Más grande */
+    color: #666;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.detail-content .moto-price {
+    font-size: 2.2rem; /* Más grande */
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.detail-content .moto-description h2 {
+    font-size: 1.8rem; /* Más grande */
+    color: var(--heading-on-light);
+    margin-top: 25px;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.detail-content .moto-description p {
+    font-size: 1.05rem; /* Ligeramente más grande */
+    line-height: 1.9; /* Más espacio entre líneas */
+    color: var(--text-on-light);
+    text-align: left;
+}
+
+.detail-content .back-btn {
+    margin-top: 40px; /* Más espacio */
+    padding: 14px 30px; /* Más padding */
+    font-size: 1.1rem;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 1024px) {
+    .main-header .container {
+        padding: 0 3%;
+    }
+    .main-nav ul li {
+        margin-left: 20px;
+    }
+    .main-header.scrolled .main-nav ul li a {
+        font-size: 0.9rem;
+    }
+    .hero-section h2 {
+        font-size: 2.8rem;
+    }
+    .hero-section p {
+        font-size: 1.1rem;
+    }
+    .swiper-button-next,
+    .swiper-button-prev {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 2.5rem !important;
+    }
+}
+
 @media (max-width: 768px) {
     .main-header {
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
-        height: 60px; /* Altura inicial en móviles/tablets */
+        height: 60px;
     }
     .main-header.scrolled {
-        height: 80px; /* Altura al hacer scroll en móviles/tablets */
+        height: 50px;
+    }
+    .main-header .logo a {
+        font-size: 1.5rem;
+    }
+    .main-nav ul li {
+        margin-left: 15px;
+    }
+    .main-nav ul li a {
+        font-size: 0.9rem;
     }
     .hero-section {
-        height: 600px;
+        height: 70vh;
+        padding-top: 60px;
     }
     .hero-section h2 {
         font-size: 2.2rem;
     }
-
-    /* Media queries para logos */
+    .hero-section p {
+        font-size: 1rem;
+    }
+    .catalog-section h1, .services-section h1, .about-section h2, .contact-section h2 {
+        font-size: 2.5rem;
+    }
+    .swiper-container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .motorcycle-card {
+        max-width: 90%; /* Ajuste para móviles */
+        height: 400px;
+    }
+    .motorcycle-card .card-content h3 {
+        font-size: 1.5rem;
+    }
+    .motorcycle-card .card-content .price {
+        font-size: 1.4rem;
+    }
     .logos-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    .logo-item {
-        height: 120px;
-        padding: 15px;
-    }
-    .logo-item img {
-        max-width: 90%;
-        max-height: 90%;
-    }
-
-    /* Media query para carrusel en tablets */
-    .swiper-button-next,
-    .swiper-button-prev {
-        font-size: 2rem !important;
-        left: -30px !important;
-        right: -30px !important;
-    }
-
-    /* Media Queries para el catálogo completo en tablets */
-    .full-catalog-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-    }
-
-    /* Media queries para tablas de admin */
-    .moto-table th, .moto-table td {
-        padding: 8px 10px;
-        font-size: 0.8rem;
-    }
-    .moto-table td img {
-        width: 60px;
-        height: 45px;
-    }
-    .moto-actions a, .moto-actions button {
-        padding: 4px 8px;
-        font-size: 0.75rem;
-    }
-    .admin-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-}
-
-@media (max-width: 480px) {
-    .main-header {
-        backdrop-filter: blur(3px);
-        -webkit-backdrop-filter: blur(3px);
-        height: 50px;
-    }
-    .main-header.scrolled {
-        height: 70px;
-    }
-    .hero-section {
-        height: 500px;
-    }
-    .hero-section h2 {
-        font-size: 1.8rem;
-    }
-    .main-nav ul {
-        flex-direction: column; /* Apila los elementos del menú en móvil */
-        align-items: center;
-        margin-top: 10px;
-    }
-    .main-nav ul li {
-        margin: 5px 0;
-    }
-
-    /* Media queries para logos */
-    .logos-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
     }
     .logo-item {
         height: 100px;
         padding: 10px;
     }
-    .logo-item img {
-        max-width: 95%;
-        max-height: 95%;
+    .service-grid {
+        grid-template-columns: 1fr; /* Una columna en móviles */
     }
+    .contact-form {
+        padding: 20px;
+    }
+    .detail-card {
+        flex-direction: column;
+        margin: 0 10px; /* Margen en los lados para móviles */
+    }
+    .detail-content {
+        padding: 25px;
+    }
+    .detail-content h1 {
+        font-size: 2.2rem;
+    }
+    .detail-content .moto-price {
+        font-size: 1.8rem;
+    }
+    .detail-content .moto-description h2 {
+        font-size: 1.4rem;
+    }
+    .full-catalog-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        padding: 0 10px;
+    }
+    .filter-form {
+        padding: 20px;
+        gap: 10px;
+    }
+    .filter-group.price-range {
+        flex-direction: column; /* Apilar inputs de precio en móviles */
+        align-items: stretch;
+    }
+    .filter-group.price-range input {
+        width: 100%; /* Ocupar todo el ancho disponible */
+    }
+    .filter-group.price-range span {
+        margin: 5px 0; /* Espacio vertical */
+        text-align: center;
+    }
+    .filter-form .btn {
+        width: 100%; /* Botones de filtro de ancho completo */
+        margin-top: 15px;
+    }
+}
 
-    /* Media query para carrusel en móviles */
+@media (max-width: 480px) {
+    .main-nav ul {
+        flex-wrap: wrap; /* Permitir que los elementos del nav se envuelvan */
+        justify-content: center;
+    }
+    .main-nav ul li {
+        margin: 5px 10px; /* Más espacio entre ellos */
+    }
+    .hero-section h2 {
+        font-size: 1.8rem;
+    }
+    .hero-section p {
+        font-size: 0.9rem;
+    }
+    .motorcycle-card {
+        height: 380px;
+    }
     .swiper-button-next,
     .swiper-button-prev {
-        font-size: 1.8rem !important;
-        top: 40%;
-        left: -10px !important;
-        right: -10px !important;
-        width: 40px;
-        height: 40px;
+        display: none !important; /* Ocultar flechas en pantallas muy pequeñas si no hay espacio */
     }
-    .swiper-pagination {
-        bottom: 5px !important;
+    .swiper-pagination-bullet {
+        width: 8px !important;
+        height: 8px !important;
+        margin: 0 4px !important;
     }
-
-    /* Media Queries para el catálogo completo en móviles */
-    .full-catalog-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    /* Media queries para tablas de admin en móviles */
-    .moto-table, .moto-table thead, .moto-table tbody, .moto-table th, .moto-table td, .moto-table tr {
-        display: block;
-    }
-    .moto-table thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-    }
-    .moto-table tr {
-        border: 1px solid #ccc;
-        margin-bottom: 15px;
-        border-radius: 8px;
-        overflow: hidden;
-    }
-    .moto-table td {
-        border: none;
-        position: relative;
-        padding-left: 50%;
-        text-align: right;
-    }
-    .moto-table td:before {
-        position: absolute;
-        top: 6px;
-        left: 6px;
-        width: 45%;
-        padding-right: 10px;
-        white-space: nowrap;
-        text-align: left;
-        font-weight: bold;
-        content: attr(data-label);
-        color: var(--secondary-color);
-    }
-    .moto-table td:nth-of-type(1):before { content: "ID:"; }
-    .moto-table td:nth-of-type(2):before { content: "Imagen:"; }
-    .moto-table td:nth-of-type(3):before { content: "Nombre:"; }
-    .moto-table td:nth-of-type(4):before { content: "Marca:"; }
-    .moto-table td:nth-of-type(5):before { content: "Modelo:"; }
-    .moto-table td:nth-of-type(6):before { content: "Año:"; }
-    .moto-table td:nth-of-type(7):before { content: "Precio:"; }
-    .moto-table td:nth-of-type(8):before { content: "Acciones:"; }
-
-    .moto-table td img {
-        width: 100px;
-        height: 75px;
+    .swiper-pagination-bullet-active {
+        width: 20px !important;
     }
 }

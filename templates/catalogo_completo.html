@@ -7,11 +7,50 @@
     <div class="container">
         <h1>Explora Nuestro Catálogo Completo</h1>
         <p class="description">Descubre todas las motocicletas disponibles en nuestra tienda. Utiliza los filtros para encontrar tu moto ideal.</p>
+
+        <!-- Formulario de Filtrado y Búsqueda -->
+        <form class="filter-form" method="GET" action="{{ url_for('catalogo_completo') }}">
+            <div class="filter-group">
+                <label for="search_query">Buscar:</label>
+                <input type="text" id="search_query" name="search_query" placeholder="Nombre, marca, modelo..." value="{{ search_query }}">
+            </div>
+
+            <div class="filter-group price-range">
+                <label>Precio:</label>
+                <input type="number" id="price_min" name="price_min" placeholder="Mín." value="{{ price_min if price_min is not none else '' }}">
+                <span>-</span>
+                <input type="number" id="price_max" name="price_max" placeholder="Máx." value="{{ price_max if price_max is not none else '' }}">
+            </div>
+
+            <div class="filter-group">
+                <label for="brand_filter">Marca:</label>
+                <select id="brand_filter" name="brand_filter">
+                    <option value="">Todas</option>
+                    {% for brand in available_brands %}
+                        <option value="{{ brand }}" {% if brand == brand_filter %}selected{% endif %}>{{ brand }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="year_filter">Año:</label>
+                <select id="year_filter" name="year_filter">
+                    <option value="">Todos</option>
+                    {% for year in available_years %}
+                        <option value="{{ year }}" {% if year|string == year_filter %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <button type="submit" class="btn filter-btn">Filtrar</button>
+            {# **Ajuste clave aquí:** Se eliminó el onclick y se añadió un id para manejar el evento con JS #}
+            <button type="button" class="btn btn-secondary clear-filters-btn" id="clearFiltersBtn">Limpiar Filtros</button>
+        </form>
     </div>
 
     <div class="full-catalog-grid">
         {% for moto in motos %}
-        <a href="#" class="motorcycle-card">
+        <a href="{{ url_for('moto_detalle', moto_id=moto.id) }}" class="motorcycle-card">
             <img src="{{ url_for('static', filename=moto.imagen_url) if moto.imagen_url else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ moto.nombre }}">
             <div class="card-content">
                 <h3>{{ moto.marca }} {{ moto.modelo }}</h3>
@@ -20,8 +59,41 @@
             </div>
         </a>
         {% else %}
-        <p>No hay motocicletas disponibles en el catálogo.</p>
+        <p class="no-motos-message">No hay motocicletas disponibles que coincidan con tus criterios.</p>
         {% endfor %}
     </div>
+
+    <!-- Controles de Paginación -->
+    {% if total_pages > 1 %}
+    <div class="pagination-controls">
+        <a href="{{ url_for('catalogo_completo', page=1, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
+           class="pagination-link {% if page == 1 %}disabled{% endif %}">Primera</a>
+        <a href="{{ url_for('catalogo_completo', page=page - 1, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
+           class="pagination-link {% if page == 1 %}disabled{% endif %}">Anterior</a>
+        
+        {% for p in range(1, total_pages + 1) %}
+            <a href="{{ url_for('catalogo_completo', page=p, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
+               class="pagination-link {% if p == page %}active{% endif %}">{{ p }}</a>
+        {% endfor %}
+
+        <a href="{{ url_for('catalogo_completo', page=page + 1, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
+           class="pagination-link {% if page == total_pages %}disabled{% endif %}">Siguiente</a>
+        <a href="{{ url_for('catalogo_completo', page=total_pages, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
+           class="pagination-link {% if page == total_pages %}disabled{% endif %}">Última</a>
+    </div>
+    {% endif %}
 </section>
+
+<script>
+    // Espera a que el DOM esté completamente cargado
+    document.addEventListener('DOMContentLoaded', function() {
+        const clearFiltersButton = document.getElementById('clearFiltersBtn');
+        if (clearFiltersButton) {
+            clearFiltersButton.addEventListener('click', function() {
+                // Redirige a la URL base del catálogo, limpiando todos los filtros
+                window.location.href = "{{ url_for('catalogo_completo') }}";
+            });
+        }
+    });
+</script>
 {% endblock %}
