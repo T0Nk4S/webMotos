@@ -24,7 +24,6 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    line-height: 1.6;
     color: var(--text-on-dark);
     background-color: var(--light-color); /* Fondo por defecto más claro para el contenido principal */
 }
@@ -1155,6 +1154,124 @@ section {
     margin-top: 40px;
     padding: 14px 30px;
     font-size: 1.1rem;
+}
+
+/* --- ESTILOS PARA EL BOTÓN SECRETO DEL ADMIN --- */
+.admin-secret-spot {
+    /* Posición y tamaño mínimos para que sea cliqueable */
+    width: 30px;
+    height: 30px;
+    /* Ubicación discreta: puedes ajustarla, por ejemplo, en una esquina */
+    position: absolute; 
+    right: 20px; /* A 20px del borde derecho del header */
+    top: 50%; /* Centrado verticalmente */
+    transform: translateY(-50%); /* Ajuste fino para centrado vertical */
+    cursor: default; /* Cambiado a 'default' para no delatar que es cliqueable */
+    z-index: 1001; /* Asegura que esté por encima de otros elementos */
+
+    /* Lo hacemos completamente invisible y sin efectos al pasar el mouse */
+    background-color: transparent; 
+    opacity: 0; 
+    /* No hay reglas :hover específicas para que no cambie su apariencia */
+}
+
+/* --- ESTILOS PARA LA PÁGINA DE LOGIN DE ADMIN --- */
+.admin-login-section {
+    padding: 80px 0;
+    background-color: #f4f4f4;
+    min-height: calc(100vh - 180px); /* Ajusta para que ocupe casi toda la altura visible */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-login-section .container {
+    max-width: 450px;
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.admin-login-section h2 {
+    font-size: 2.2em;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+.admin-login-form .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.admin-login-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+    font-size: 1em;
+}
+
+.admin-login-form input[type="text"],
+.admin-login-form input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box; /* Incluye padding y border en el ancho total */
+}
+
+.admin-login-form .btn-primary {
+    background-color: #007bff; /* Color azul, ajusta a tu paleta */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Botón de ancho completo */
+    margin-top: 20px;
+}
+
+.admin-login-form .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos para mensajes flash */
+.flash-messages {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-size: 0.95em;
+    font-weight: 500;
+    text-align: left;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-color: #bee5eb;
 }
 
 /* --- Responsive Adjustments --- */

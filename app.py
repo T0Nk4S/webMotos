@@ -1,10 +1,12 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash
+import math
+from flask import Flask, render_template, request, redirect, url_for, flash, session # Añadido 'session'
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.utils import secure_filename
-import math
 from sqlalchemy import func, desc
+from werkzeug.security import generate_password_hash, check_password_hash # Añadido para seguridad de contraseñas
+from functools import wraps # Añadido para el decorador login_required
 
 # Importar el formulario que definiremos en forms.py
 from forms import MotoForm
@@ -43,6 +45,17 @@ class Moto(db.Model):
     def __repr__(self):
         return f'<Moto {self.nombre} {self.modelo}>'
 
+class User(db.Model): # Nuevo modelo para el usuario administrador
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128)) # Para almacenar el hash
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
 # --- Funciones Auxiliares para Archivos ---
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -54,23 +67,27 @@ ALL_AVAILABLE_BRANDS = sorted([
     "KTM", "Motomel", "Serna", "Super Soco", "TVS", "UM", "Vespa"
 ])
 
+# --- Función Decorador para proteger rutas (MOVIDA Y AÑADIDA AQUÍ) ---
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'logged_in' not in session or not session['logged_in']:
+            flash('Por favor, inicia sesión para acceder a esta página.', 'danger')
+            return redirect(url_for('admin_login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 # --- Rutas de la Aplicación ---
 @app.route('/')
 def index():
     motos_carrusel = []
     try:
-        # **CAMBIO DE LÓGICA:** Obtener las últimas 8 motos añadidas (las de mayor ID)
-        # Esto proporcionará una muestra más variada y reciente para el carrusel de la página de inicio.
+        # Obtener las últimas 8 motos añadidas (las de mayor ID)
         motos_carrusel = Moto.query.order_by(desc(Moto.id)).limit(8).all()
-        
-        # Opcional: Si deseas un orden diferente (ej. aleatorio o por marca/precio)
-        # import random
-        # random.shuffle(motos_carrusel) 
-
     except Exception as e:
         print(f"Error al cargar motos para el carrusel: {e}")
         motos_carrusel = []
-    
+            
     return render_template('index.html', motos_carrusel=motos_carrusel)
 
 @app.route('/catalogo-completo')
@@ -90,7 +107,7 @@ def catalogo_completo():
             (Moto.marca.ilike(search_pattern)) |
             (Moto.modelo.ilike(search_pattern))
         )
-    
+            
     if brand_filter:
         query = query.filter(Moto.marca == brand_filter)
 
@@ -109,7 +126,7 @@ def catalogo_completo():
     page = request.args.get('page', 1, type=int)
     per_page = 9
     total_pages = math.ceil(total_motos / per_page)
-    
+            
     if page < 1:
         page = 1
     elif page > total_pages and total_pages > 0:
@@ -121,10 +138,10 @@ def catalogo_completo():
     end_index = start_index + per_page
     paginated_motos = filtered_motos[start_index:end_index]
 
-    available_brands = ALL_AVAILABLE_BRANDS 
+    available_brands = ALL_AVAILABLE_BRANDS    
     available_years = sorted(list(set(moto.año for moto in db.session.query(Moto.año).distinct())), reverse=True)
 
-    return render_template('catalogo_completo.html', 
+    return render_template('catalogo_completo.html',    
                             motos=paginated_motos,
                             page=page,
                             total_pages=total_pages,
@@ -145,12 +162,46 @@ def moto_detalle(moto_id):
         return redirect(url_for('catalogo_completo'))
     return render_template('moto_detalle.html', moto=moto)
 
-@app.route('/admin')
+# --- RUTAS DE ADMINISTRACIÓN (Con Login Required) ---
+
+# Ruta para el formulario de login del administrador
+@app.route('/admin_login', methods=['GET', 'POST'])
+def admin_login():
+    if 'logged_in' in session and session['logged_in']:
+        # Si ya está logueado, redirige directamente a la página de admin
+        flash('Ya has iniciado sesión.', 'info')
+        return redirect(url_for('admin_motos'))
+
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.check_password(password):
+            session['logged_in'] = True
+            flash('¡Inicio de sesión exitoso! Bienvenido, Administrador.', 'success')
+            return redirect(url_for('admin_motos'))
+        else:
+            flash('Usuario o contraseña incorrectos.', 'danger')
+    return render_template('admin_login.html')
+
+# Ruta para cerrar sesión
+@app.route('/admin_logout')
+def admin_logout():
+    session.pop('logged_in', None)
+    flash('Has cerrado sesión.', 'info')
+    return redirect(url_for('index'))
+
+@app.route('/admin_motos') # Cambiado de '/admin' a '/admin_motos' para consistencia con url_for
+@login_required
 def admin_motos():
     motos = Moto.query.all()
-    return render_template('admin_motos.html', motos=motos)
+    form = MotoForm() # Pasa una instancia de MotoForm para el CSRF token
+    return render_template('admin_motos.html', motos=motos, form=form)
 
-@app.route('/add-moto', methods=['GET', 'POST'])
+@app.route('/add_moto', methods=['GET', 'POST']) # Cambiado de '/add-moto' a '/add_moto'
+@login_required
 def add_moto():
     form = MotoForm()
     if form.validate_on_submit():
@@ -182,7 +233,8 @@ def add_moto():
 
     return render_template('add_edit_moto.html', form=form, moto=None)
 
-@app.route('/edit-moto/<int:moto_id>', methods=['GET', 'POST'])
+@app.route('/edit_moto/<int:moto_id>', methods=['GET', 'POST']) # Cambiado de '/edit-moto' a '/edit_moto'
+@login_required
 def edit_moto(moto_id):
     moto = db.session.get(Moto, moto_id)
     if not moto:
@@ -197,6 +249,7 @@ def edit_moto(moto_id):
                 if moto.imagen_url and os.path.exists(os.path.join(app.root_path, 'static', moto.imagen_url)):
                     try:
                         os.remove(os.path.join(app.root_path, 'static', moto.imagen_url))
+                        print(f"Imagen antigua eliminada: {moto.imagen_url}")
                     except OSError as e:
                         print(f"Error al eliminar la imagen antigua: {e}")
 
@@ -222,7 +275,8 @@ def edit_moto(moto_id):
 
     return render_template('add_edit_moto.html', form=form, moto=moto)
 
-@app.route('/delete-moto/<int:moto_id>', methods=['POST'])
+@app.route('/delete_moto/<int:moto_id>', methods=['POST']) # Cambiado de '/delete-moto' a '/delete_moto'
+@login_required
 def delete_moto(moto_id):
     moto = db.session.get(Moto, moto_id)
     if not moto:
@@ -249,8 +303,21 @@ if __name__ == '__main__':
         db.create_all()
         print("Tablas de la base de datos creadas si no existían.")
 
+        # Crea un usuario administrador por defecto si no existe
+        if not User.query.filter_by(username='admin').first():
+            admin_user = User(username='admin')
+            admin_user.set_password('admin123') # Contraseña para tu administrador
+            db.session.add(admin_user)
+            db.session.commit()
+            print("----------------------------------------------------------------------")
+            print("¡ATENCIÓN: Usuario 'admin' creado con contraseña 'admin123'!")
+            print("        CAMBIA ESTAS CREDENCIALES EN EL CÓDIGO PARA PRODUCCIÓN.")
+            print("----------------------------------------------------------------------")
+        else:
+            print("El usuario 'admin' ya existe.")
+
         if not Moto.query.first():
-            print("Base de datos vacía, añadiendo datos de ejemplo...")
+            print("Base de datos de motos vacía, añadiendo datos de ejemplo...")
             sample_motos = [
                 Moto(nombre="Leoncino 500", marca="Benelli", modelo="BJ500", año=2023, precio=6999.00, descripcion="Una scrambler moderna con diseño italiano y un motor bicilíndrico emocionante.", imagen_url="images/uploads/benelli.png"),
                 Moto(nombre="650NK", marca="CFMoto", modelo="CF650NK", año=2024, precio=6499.00, descripcion="Naked de media cilindrada, potente y ágil, con un estilo agresivo.", imagen_url="images/uploads/cfmoto.png"),
@@ -275,6 +342,6 @@ if __name__ == '__main__':
             ]
             db.session.add_all(sample_motos)
             db.session.commit()
-            print("Datos de ejemplo añadidos a la base de datos.")
+            print("Datos de ejemplo de motos añadidos a la base de datos.")
 
-    app.run(debug=False)
+    app.run(debug=True) # Mantener debug=True para desarrollo, cambiar a False en producción

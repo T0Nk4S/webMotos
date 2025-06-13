@@ -3,12 +3,13 @@
         <div class="logo">
             <a href="{{ url_for('index') }}">Moto<span>Shop</span></a>
         </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="{{ url_for('index') }}">Inicio</a></li>
-                    <li><a href="{{ url_for('catalogo_completo') }}">Catálogo</a></li>
-                    <li><a href="{{ url_for('admin_motos') }}">Admin</a></li> {# <-- ¡CAMBIA ESTO! #}
-                </ul>
-            </nav>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="{{ url_for('index') }}">Inicio</a></li>
+                <li><a href="{{ url_for('catalogo_completo') }}">Catálogo</a></li>
+            </ul>
+        </nav>
+        {# ASEGÚRATE QUE ESTE DIV ESTÁ PRESENTE: #}
+        <div id="admin-secret-btn" class="admin-secret-spot" title="Acceso de Administrador"></div>
     </div>
 </header>

@@ -20,7 +20,7 @@
         </h1>
 
         <form method="POST" enctype="multipart/form-data">
-            {{ form.csrf_token }} {# Campo CSRF oculto para seguridad #}
+            {{ form.csrf_token }} {# Correcto: Campo CSRF oculto para seguridad #}
 
             <div class="form-group">
                 {{ form.nombre.label }}
