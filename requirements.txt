@@ -1,2 +1,6 @@
 Flask
-Flask-SQLAlchemy 
+Flask-WTF
+Flask-SQLAlchemy
+python-dotenv
+Pillow
+gunicorn

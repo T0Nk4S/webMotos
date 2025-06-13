@@ -277,4 +277,4 @@ if __name__ == '__main__':
             db.session.commit()
             print("Datos de ejemplo añadidos a la base de datos.")
 
-    app.run(debug=True)
+    app.run(debug=False)
