@@ -306,7 +306,7 @@ if __name__ == '__main__':
         # Crea un usuario administrador por defecto si no existe
         if not User.query.filter_by(username='admin').first():
             admin_user = User(username='admin')
-            admin_user.set_password('admin123') # Contraseña para tu administrador
+            admin_user.set_password('Th1Nk3R23524') # Contraseña para tu administrador
             db.session.add(admin_user)
             db.session.commit()
             print("----------------------------------------------------------------------")
