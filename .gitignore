@@ -1,0 +1,29 @@
+# Archivos de entorno virtual
+venv/
+.venv/
+env/
+.env/
+
+# Archivos de la base de datos (SQLite)
+*.db
+*.sqlite
+*.sqlite3
+
+# Archivos de Python generados
+__pycache__/
+*.pyc
+*.pyd
+.Python
+.ipynb_checkpoints/ # Si usas Jupyter Notebooks
+
+# Archivos de registro (logs)
+*.log
+logs/
+
+# Archivos de Pytest (si los usas)
+.pytest_cache/
+
+# Archivos del sistema operativo
+.DS_Store # macOS
+Thumbs.db # Windows
+desktop.ini # Windows
