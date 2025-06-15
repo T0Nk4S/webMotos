@@ -7,6 +7,8 @@
     <div class="admin-header">
         <h1>Gestión de Motocicletas</h1>
         <a href="{{ url_for('add_moto') }}" class="btn">Añadir Nueva Moto</a>
+        {# BOTÓN ACTUALIZADO: Exportar a PDF #}
+        <a href="{{ url_for('export_pdf_motos') }}" class="btn btn-primary">Exportar Catálogo a PDF</a> 
         {# Botón para cerrar sesión en la administración #}
         <a href="{{ url_for('admin_logout') }}" class="btn btn-danger">Cerrar Sesión</a>
     </div>
@@ -49,7 +51,7 @@
                     <td data-label="Acciones:" class="moto-actions">
                         <a href="{{ url_for('edit_moto', moto_id=moto.id) }}" class="btn edit-btn">Editar</a>
                         <form action="{{ url_for('delete_moto', moto_id=moto.id) }}" method="POST" style="display:inline;">
-                            {{ form.csrf_token }} {# CAMBIADO: Usar form.csrf_token ya que 'form' se pasa desde app.py #}
+                            {{ form.csrf_token }}
                             <button type="submit" class="btn delete-btn" onclick="return confirm('¿Estás seguro de que quieres eliminar esta moto?')">Eliminar</button>
                         </form>
                     </td>

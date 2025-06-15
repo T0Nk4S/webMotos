@@ -1,13 +1,23 @@
 import os
 import math
 import re
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.utils import secure_filename
 from sqlalchemy import func, desc
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
+
+# --- Importaciones para generación de PDF (Estilizadas) ---
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image # Añadido Image
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch, mm # Añadido mm
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter # Para definir el tamaño de página
+from reportlab.lib.utils import ImageReader # Para cargar imágenes
+from io import BytesIO # Para crear el PDF en memoria
+# --- Fin de importaciones de PDF ---
 
 # Importar el formulario que definiremos en forms.py
 from forms import MotoForm
@@ -228,13 +238,12 @@ def add_moto():
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], imagen_filename)
                 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
                 form.imagen.data.save(file_path)
-                imagen_url_db = f'images/uploads/{imagen_filename}' # Guardar la URL relativa para DB
+                imagen_url_db = f'images/uploads/{imagen_filename}'
             else:
                 flash('Tipo de archivo no permitido para la imagen.', 'danger')
                 return render_template('add_edit_moto.html', form=form, moto=None)
         else:
-            # Si no se sube imagen, asignar una URL de placeholder o None
-            imagen_url_db = None # Puedes cambiar esto a 'images/placeholder.jpg' si lo deseas
+            imagen_url_db = None
 
         nueva_moto = Moto(
             nombre=form.nombre.data,
@@ -243,7 +252,7 @@ def add_moto():
             año=form.año.data,
             precio=form.precio.data,
             descripcion=form.descripcion.data,
-            imagen_url=imagen_url_db # Usar la URL relativa para la DB
+            imagen_url=imagen_url_db
         )
         db.session.add(nueva_moto)
         db.session.commit()
@@ -260,15 +269,13 @@ def edit_moto(moto_id):
         flash(f'La moto con ID {moto_id} no fue encontrada.', 'danger')
         return redirect(url_for('admin_motos'))
 
-    # Pasar obj=moto al formulario si es GET para precargar los datos existentes
     form = MotoForm(obj=moto)
 
     if form.validate_on_submit():
-        if form.imagen.data: # Si se envió una nueva imagen
+        if form.imagen.data:
             original_filename = form.imagen.data.filename
             if allowed_file(original_filename):
-                # Eliminar imagen antigua si existe y es un archivo subido por el usuario
-                if moto.imagen_url and moto.imagen_url.startswith('images/uploads/'): # Asegurarse de no borrar placeholders
+                if moto.imagen_url and moto.imagen_url.startswith('images/uploads/'):
                     image_path_to_delete = os.path.join(app.root_path, 'static', moto.imagen_url)
                     if os.path.exists(image_path_to_delete):
                         try:
@@ -279,19 +286,15 @@ def edit_moto(moto_id):
                     else:
                         print(f"Advertencia: La imagen antigua '{moto.imagen_url}' no existe en el disco.")
 
-                # GENERAR NUEVO NOMBRE DE ARCHIVO BASADO EN MARCA Y MODELO
                 imagen_filename = generate_unique_filename(form.marca.data, form.modelo.data, original_filename.rsplit('.', 1)[1].lower())
                 
-                # Guardar el nuevo archivo
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], imagen_filename)
                 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
                 form.imagen.data.save(file_path)
-                moto.imagen_url = f'images/uploads/{imagen_filename}' # Actualizar ruta en DB
+                moto.imagen_url = f'images/uploads/{imagen_filename}'
             else:
                 flash('Tipo de archivo no permitido para la nueva imagen.', 'danger')
                 return render_template('add_edit_moto.html', form=form, moto=moto)
-        # else: No se subió una nueva imagen, mantener la imagen_url existente si no era None
-        # Si el usuario quiere borrar la imagen sin subir una nueva, necesitarías un campo checkbox aparte
 
         moto.nombre = form.nombre.data
         moto.marca = form.marca.data
@@ -303,7 +306,6 @@ def edit_moto(moto_id):
         db.session.commit()
         flash('¡Moto actualizada exitosamente!', 'success')
         return redirect(url_for('admin_motos'))
-    # Si es un GET request o el formulario no es válido en POST, renderizar la plantilla
     return render_template('add_edit_moto.html', form=form, moto=moto)
 
 @app.route('/delete_moto/<int:moto_id>', methods=['POST'])
@@ -314,32 +316,207 @@ def delete_moto(moto_id):
         flash(f'La moto con ID {moto_id} no fue encontrada.', 'danger')
         return redirect(url_for('admin_motos'))
 
-    # Eliminar el archivo de imagen asociado si existe y es un archivo subido por el usuario
     if moto.imagen_url:
-        # **FILTRAR: Solo intenta eliminar si la URL de la imagen está en la carpeta de uploads**
-        # Esto previene intentar eliminar imágenes por defecto (placeholders)
         if moto.imagen_url.startswith('images/uploads/'):
             image_path = os.path.join(app.root_path, 'static', moto.imagen_url)
             
             if os.path.exists(image_path):
                 try:
                     os.remove(image_path)
-                    print(f"Image deleted successfully: {image_path}") # Mensaje claro de éxito
+                    print(f"Image deleted successfully: {image_path}")
                 except OSError as e:
-                    print(f"ERROR deleting image {image_path}: {e}") # Mensaje claro de error
+                    print(f"ERROR deleting image {image_path}: {e}")
                     flash(f"Error al eliminar la imagen del servidor: {e}", 'danger')
             else:
                 print(f"Advertencia: El archivo de imagen no existe en el disco: {image_path}")
                 flash("Advertencia: La imagen asociada no se encontró en el servidor, solo se eliminó la entrada de la base de datos.", 'info')
         else:
             print(f"Advertencia: La imagen {moto.imagen_url} no está en la carpeta de uploads, no se intentó eliminar del disco.")
-            # flash("Advertencia: La imagen asociada no es un archivo subido por el usuario.", 'info') # Opcional: mostrar al usuario
 
     db.session.delete(moto)
     db.session.commit()
     flash('¡Moto eliminada exitosamente!', 'success')
 
     return redirect(url_for('admin_motos'))
+
+# --- FUNCIÓN NUEVA Y ESTILIZADA: Exportar Catálogo a PDF ---
+@app.route('/export_pdf_motos')
+@login_required
+def export_pdf_motos():
+    motos = Moto.query.order_by(Moto.marca, Moto.modelo).all()
+
+    motos_by_brand = {}
+    for moto in motos:
+        if moto.marca not in motos_by_brand:
+            motos_by_brand[moto.marca] = []
+        motos_by_brand[moto.marca].append(moto)
+
+    buffer = BytesIO()
+    # Usar pagesize=letter para un tamaño de hoja estándar, ajustar márgenes
+    doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=inch/2, leftMargin=inch/2, topMargin=inch/2, bottomMargin=inch/2)
+    
+    Story = []
+    styles = getSampleStyleSheet()
+
+    # --- Estilos Personalizados Mejorados ---
+    styles.add(ParagraphStyle(name='TitleStyle',
+                             fontSize=30,
+                             leading=36,
+                             alignment=1, # Centro
+                             spaceAfter=24,
+                             fontName='Helvetica-Bold',
+                             textColor=colors.HexColor('#2C3E50'))) # Azul oscuro elegante
+
+    styles.add(ParagraphStyle(name='SubtitleStyle',
+                             fontSize=14,
+                             leading=18,
+                             alignment=1, # Centro
+                             spaceAfter=20,
+                             fontName='Helvetica-Oblique',
+                             textColor=colors.gray))
+
+    styles.add(ParagraphStyle(name='BrandHeader',
+                             fontSize=22,
+                             leading=26,
+                             spaceBefore=25, # Más espacio antes de cada marca
+                             spaceAfter=15,
+                             fontName='Helvetica-BoldOblique', # Cursiva negrita
+                             textColor=colors.HexColor('#E74C3C'), # Rojo vibrante
+                             alignment=0)) # Izquierda
+
+    styles.add(ParagraphStyle(name='MotoDetailHeader',
+                             fontSize=12,
+                             leading=14,
+                             fontName='Helvetica-Bold',
+                             textColor=colors.black))
+    
+    styles.add(ParagraphStyle(name='MotoDetailText',
+                             fontSize=10,
+                             leading=12,
+                             fontName='Helvetica'))
+
+    styles.add(ParagraphStyle(name='DescriptionStyle',
+                             fontSize=9,
+                             leading=11,
+                             spaceAfter=8,
+                             fontName='Helvetica-Oblique',
+                             textColor=colors.HexColor('#34495E'))) # Gris oscuro para descripción
+
+    # --- Título Principal del Catálogo ---
+    Story.append(Paragraph("Catálogo Completo de Motocicletas", styles['TitleStyle']))
+    Story.append(Paragraph("Presentado por MotoShop - Su fuente de pasión sobre ruedas", styles['SubtitleStyle']))
+    Story.append(Spacer(1, 0.3 * inch))
+
+    # --- Iterar sobre las marcas y sus motos ---
+    for brand in sorted(motos_by_brand.keys()):
+        Story.append(Paragraph(f"Marca: {brand}", styles['BrandHeader']))
+        Story.append(Spacer(1, 0.1 * inch))
+
+        # Configuración de tabla con columna de imagen
+        # Anchos de columna: Imagen, Nombre/Modelo/Año, Precio, Descripción
+        col_widths = [1.2 * inch, 2.0 * inch, 0.8 * inch, 2.5 * inch] # Ajustados para incluir imagen
+
+        # Encabezados de la tabla
+        table_headers = [
+            Paragraph("Imagen", styles['MotoDetailHeader']),
+            Paragraph("Moto (Nombre / Modelo / Año)", styles['MotoDetailHeader']),
+            Paragraph("Precio", styles['MotoDetailHeader']),
+            Paragraph("Descripción", styles['MotoDetailHeader'])
+        ]
+        data = [table_headers] # Primera fila son los encabezados
+
+        for moto in motos_by_brand[brand]:
+            # --- Manejo de la Imagen para el PDF ---
+            img_element = "" # Placeholder por defecto
+            image_absolute_path = os.path.join(app.root_path, 'static', moto.imagen_url) if moto.imagen_url else ''
+            
+            # Dimensiones deseadas para la imagen en la tabla (aprox.)
+            img_width = 1.0 * inch
+            img_height = 0.75 * inch
+
+            if moto.imagen_url and os.path.exists(image_absolute_path):
+                try:
+                    img = Image(image_absolute_path, img_width, img_height)
+                    img_element = img
+                except Exception as e:
+                    print(f"Error al cargar imagen para PDF '{image_absolute_path}': {e}")
+                    img_element = Paragraph("<i>No image found</i>", styles['MotoDetailText']) # Fallback si hay error
+            else:
+                # Usar una imagen de placeholder para el PDF si no hay URL o no existe
+                placeholder_path = os.path.join(app.root_path, 'static', 'images', 'placeholder.jpg')
+                if os.path.exists(placeholder_path):
+                    try:
+                        img = Image(placeholder_path, img_width, img_height)
+                        img_element = img
+                    except Exception as e:
+                        print(f"Error al cargar placeholder para PDF '{placeholder_path}': {e}")
+                        img_element = Paragraph("<i>No image</i>", styles['MotoDetailText'])
+                else:
+                    img_element = Paragraph("<i>No image</i>", styles['MotoDetailText'])
+
+            # --- Contenido de las Celdas ---
+            moto_info = Paragraph(
+                f"<b>{moto.nombre}</b><br/>"
+                f"{moto.modelo}<br/>"
+                f"Año: {moto.año}",
+                styles['MotoDetailText']
+            )
+
+            precio_info = Paragraph(f"${moto.precio:,.2f}", styles['MotoDetailText'])
+
+            desc_info = Paragraph(moto.descripcion if moto.descripcion else "Sin descripción.", styles['DescriptionStyle'])
+            
+            data.append([
+                img_element,
+                moto_info,
+                precio_info,
+                desc_info
+            ])
+
+        # Crear la tabla
+        # La tabla se crea con 4 columnas: Imagen, Nombre/Modelo/Año, Precio, Descripción
+        table = Table(data, colWidths=col_widths)
+        
+        # --- Estilo de la Tabla Mejorado ---
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#3498DB')), # Azul para el encabezado
+            ('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke),
+            ('ALIGN', (0,0), (-1,-1), 'CENTER'), # Alineación general
+            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'), # Centrado vertical para todo
+            ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0,0), (-1,0), 12),
+            ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#BDC3C7')), # Bordes grises suaves
+            ('BACKGROUND', (0,1), (-1,-1), colors.HexColor('#ECF0F1')), # Gris claro para filas impares
+            ('BACKGROUND', (0,1), (-1,-1), colors.HexColor('#FFFFFF')), # Blanco para filas pares (si se alterna)
+            ('ROWBACKGROUNDS', (0,0), (-1,-1), [colors.HexColor('#FFFFFF'), colors.HexColor('#ECF0F1')]), # Alternar blanco y gris claro
+            ('LEFTPADDING', (0,0), (-1,-1), 6),
+            ('RIGHTPADDING', (0,0), (-1,-1), 6),
+            ('TOPPADDING', (0,0), (-1,-1), 6),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+            
+            # Alineación específica para la imagen y texto
+            ('ALIGN', (0,1), (0,-1), 'CENTER'), # Imágenes centradas
+            ('ALIGN', (1,1), (1,-1), 'LEFT'),   # Nombre/Modelo/Año a la izquierda
+            ('ALIGN', (2,1), (2,-1), 'RIGHT'),  # Precio a la derecha
+            ('ALIGN', (3,1), (3,-1), 'LEFT'),   # Descripción a la izquierda
+            ('VALIGN', (0,0), (-1,-1), 'TOP'), # Alineación vertical superior para todas las celdas (especialmente descripción)
+        ]))
+        Story.append(table)
+        Story.append(Spacer(1, 0.5 * inch)) # Espacio entre marcas
+
+    # Construir el PDF
+    doc.build(Story)
+    
+    # Mover el puntero al inicio del buffer antes de enviarlo
+    buffer.seek(0)
+    
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name='catalogo_motos_motoshop.pdf', # Nombre del archivo al descargar
+        mimetype='application/pdf'
+    )
+
 
 if __name__ == '__main__':
     with app.app_context():
