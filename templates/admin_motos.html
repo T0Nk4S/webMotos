@@ -7,9 +7,7 @@
     <div class="admin-header">
         <h1>Gestión de Motocicletas</h1>
         <a href="{{ url_for('add_moto') }}" class="btn">Añadir Nueva Moto</a>
-        {# BOTÓN ACTUALIZADO: Exportar a PDF #}
         <a href="{{ url_for('export_pdf_motos') }}" class="btn btn-primary">Exportar Catálogo a PDF</a> 
-        {# Botón para cerrar sesión en la administración #}
         <a href="{{ url_for('admin_logout') }}" class="btn btn-danger">Cerrar Sesión</a>
     </div>
 
@@ -30,9 +28,9 @@
                 <tr>
                     <th>ID</th>
                     <th>Imagen</th>
-                    <th>Nombre</th>
-                    <th>Marca</th>
-                    <th>Modelo</th>
+                    <th>Marca</th> {# CAMBIADO: Antes era 'Nombre' #}
+                    <th>Modelo</th> {# CAMBIADO: Antes era 'Marca' #}
+                    {# ELIMINADO: <th>Nombre</th> #}
                     <th>Año</th>
                     <th>Precio</th>
                     <th>Acciones</th>
@@ -42,10 +40,9 @@
                 {% for moto in motos %}
                 <tr>
                     <td data-label="ID:">{{ moto.id }}</td>
-                    <td data-label="Imagen:"><img src="{{ url_for('static', filename=moto.imagen_url) if moto.imagen_url else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ moto.nombre }}"></td>
-                    <td data-label="Nombre:">{{ moto.nombre }}</td>
-                    <td data-label="Marca:">{{ moto.marca }}</td>
-                    <td data-label="Modelo:">{{ moto.modelo }}</td>
+                    <td data-label="Imagen:"><img src="{{ url_for('static', filename=moto.imagen_url) if moto.imagen_url else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ moto.marca }} {{ moto.modelo }}"></td>
+                    <td data-label="Marca:">{{ moto.marca }}</td> {# CAMBIADO: Ahora muestra la marca #}
+                    <td data-label="Modelo:">{{ moto.modelo }}</td> {# CAMBIADO: Ahora muestra el modelo #}
                     <td data-label="Año:">{{ moto.año }}</td>
                     <td data-label="Precio:">${{ "{:,.2f}".format(moto.precio) }}</td>
                     <td data-label="Acciones:" class="moto-actions">

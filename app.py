@@ -9,18 +9,18 @@ from sqlalchemy import func, desc
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
-# --- Importaciones para generación de PDF (Estilizadas) ---
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image # Añadido Image
+# --- Importaciones para generación de PDF ---
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch, mm # Añadido mm
+from reportlab.lib.units import inch, mm
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter # Para definir el tamaño de página
-from reportlab.lib.utils import ImageReader # Para cargar imágenes
-from io import BytesIO # Para crear el PDF en memoria
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.utils import ImageReader
+from io import BytesIO
 # --- Fin de importaciones de PDF ---
 
 # Importar el formulario que definiremos en forms.py
-from forms import MotoForm
+from forms import MotoForm # <-- Este archivo también cambiará
 
 # --- Configuración de la Aplicación Flask ---
 app = Flask(__name__)
@@ -44,7 +44,7 @@ csrf = CSRFProtect(app)
 # --- Modelo de la Base de Datos ---
 class Moto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
+    # nombre = db.Column(db.String(100), nullable=False) # <-- ELIMINADO: Campo 'nombre'
     marca = db.Column(db.String(100), nullable=False)
     modelo = db.Column(db.String(100), nullable=False)
     año = db.Column(db.Integer, nullable=False)
@@ -53,7 +53,8 @@ class Moto(db.Model):
     imagen_url = db.Column(db.String(200), nullable=True)
 
     def __repr__(self):
-        return f'<Moto {self.nombre} {self.modelo}>'
+        # Ahora representará usando marca y modelo
+        return f'<Moto {self.marca} {self.modelo}>'
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -130,7 +131,7 @@ def catalogo_completo():
     if search_query:
         search_pattern = f"%{search_query}%"
         query = query.filter(
-            (Moto.nombre.ilike(search_pattern)) |
+            # (Moto.nombre.ilike(search_pattern)) | # <-- ELIMINADO de la búsqueda
             (Moto.marca.ilike(search_pattern)) |
             (Moto.modelo.ilike(search_pattern))
         )
@@ -233,6 +234,7 @@ def add_moto():
         if form.imagen.data:
             original_filename = form.imagen.data.filename
             if allowed_file(original_filename):
+                # Usar marca y modelo para el nombre de archivo
                 imagen_filename = generate_unique_filename(form.marca.data, form.modelo.data, original_filename.rsplit('.', 1)[1].lower())
                 
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], imagen_filename)
@@ -246,7 +248,7 @@ def add_moto():
             imagen_url_db = None
 
         nueva_moto = Moto(
-            nombre=form.nombre.data,
+            # nombre=form.nombre.data, # <-- ELIMINADO de la creación
             marca=form.marca.data,
             modelo=form.modelo.data,
             año=form.año.data,
@@ -286,6 +288,7 @@ def edit_moto(moto_id):
                     else:
                         print(f"Advertencia: La imagen antigua '{moto.imagen_url}' no existe en el disco.")
 
+                # Usar marca y modelo para el nuevo nombre de archivo
                 imagen_filename = generate_unique_filename(form.marca.data, form.modelo.data, original_filename.rsplit('.', 1)[1].lower())
                 
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], imagen_filename)
@@ -296,7 +299,7 @@ def edit_moto(moto_id):
                 flash('Tipo de archivo no permitido para la nueva imagen.', 'danger')
                 return render_template('add_edit_moto.html', form=form, moto=moto)
 
-        moto.nombre = form.nombre.data
+        # moto.nombre = form.nombre.data # <-- ELIMINADO de la actualización
         moto.marca = form.marca.data
         moto.modelo = form.modelo.data
         moto.año = form.año.data
@@ -339,7 +342,7 @@ def delete_moto(moto_id):
 
     return redirect(url_for('admin_motos'))
 
-# --- FUNCIÓN NUEVA Y ESTILIZADA: Exportar Catálogo a PDF ---
+# --- FUNCIÓN: Exportar Catálogo a PDF ---
 @app.route('/export_pdf_motos')
 @login_required
 def export_pdf_motos():
@@ -352,25 +355,23 @@ def export_pdf_motos():
         motos_by_brand[moto.marca].append(moto)
 
     buffer = BytesIO()
-    # Usar pagesize=letter para un tamaño de hoja estándar, ajustar márgenes
     doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=inch/2, leftMargin=inch/2, topMargin=inch/2, bottomMargin=inch/2)
     
     Story = []
     styles = getSampleStyleSheet()
 
-    # --- Estilos Personalizados Mejorados ---
     styles.add(ParagraphStyle(name='TitleStyle',
                              fontSize=30,
                              leading=36,
-                             alignment=1, # Centro
+                             alignment=1,
                              spaceAfter=24,
                              fontName='Helvetica-Bold',
-                             textColor=colors.HexColor('#2C3E50'))) # Azul oscuro elegante
+                             textColor=colors.HexColor('#2C3E50')))
 
     styles.add(ParagraphStyle(name='SubtitleStyle',
                              fontSize=14,
                              leading=18,
-                             alignment=1, # Centro
+                             alignment=1,
                              spaceAfter=20,
                              fontName='Helvetica-Oblique',
                              textColor=colors.gray))
@@ -378,11 +379,11 @@ def export_pdf_motos():
     styles.add(ParagraphStyle(name='BrandHeader',
                              fontSize=22,
                              leading=26,
-                             spaceBefore=25, # Más espacio antes de cada marca
+                             spaceBefore=25,
                              spaceAfter=15,
-                             fontName='Helvetica-BoldOblique', # Cursiva negrita
-                             textColor=colors.HexColor('#E74C3C'), # Rojo vibrante
-                             alignment=0)) # Izquierda
+                             fontName='Helvetica-BoldOblique',
+                             textColor=colors.HexColor('#E74C3C'),
+                             alignment=0))
 
     styles.add(ParagraphStyle(name='MotoDetailHeader',
                              fontSize=12,
@@ -400,37 +401,31 @@ def export_pdf_motos():
                              leading=11,
                              spaceAfter=8,
                              fontName='Helvetica-Oblique',
-                             textColor=colors.HexColor('#34495E'))) # Gris oscuro para descripción
+                             textColor=colors.HexColor('#34495E')))
 
-    # --- Título Principal del Catálogo ---
     Story.append(Paragraph("Catálogo Completo de Motocicletas", styles['TitleStyle']))
     Story.append(Paragraph("Presentado por MotoShop - Su fuente de pasión sobre ruedas", styles['SubtitleStyle']))
     Story.append(Spacer(1, 0.3 * inch))
 
-    # --- Iterar sobre las marcas y sus motos ---
     for brand in sorted(motos_by_brand.keys()):
         Story.append(Paragraph(f"Marca: {brand}", styles['BrandHeader']))
         Story.append(Spacer(1, 0.1 * inch))
 
-        # Configuración de tabla con columna de imagen
-        # Anchos de columna: Imagen, Nombre/Modelo/Año, Precio, Descripción
-        col_widths = [1.2 * inch, 2.0 * inch, 0.8 * inch, 2.5 * inch] # Ajustados para incluir imagen
+        col_widths = [1.2 * inch, 2.0 * inch, 0.8 * inch, 2.5 * inch]
 
-        # Encabezados de la tabla
         table_headers = [
             Paragraph("Imagen", styles['MotoDetailHeader']),
-            Paragraph("Moto (Nombre / Modelo / Año)", styles['MotoDetailHeader']),
+            # CAMBIO: Usamos 'Marca / Modelo / Año' en lugar de 'Nombre'
+            Paragraph("Moto (Marca / Modelo / Año)", styles['MotoDetailHeader']),
             Paragraph("Precio", styles['MotoDetailHeader']),
             Paragraph("Descripción", styles['MotoDetailHeader'])
         ]
-        data = [table_headers] # Primera fila son los encabezados
-
+        data = [table_headers]
+        
         for moto in motos_by_brand[brand]:
-            # --- Manejo de la Imagen para el PDF ---
-            img_element = "" # Placeholder por defecto
+            img_element = ""
             image_absolute_path = os.path.join(app.root_path, 'static', moto.imagen_url) if moto.imagen_url else ''
             
-            # Dimensiones deseadas para la imagen en la tabla (aprox.)
             img_width = 1.0 * inch
             img_height = 0.75 * inch
 
@@ -440,9 +435,8 @@ def export_pdf_motos():
                     img_element = img
                 except Exception as e:
                     print(f"Error al cargar imagen para PDF '{image_absolute_path}': {e}")
-                    img_element = Paragraph("<i>No image found</i>", styles['MotoDetailText']) # Fallback si hay error
+                    img_element = Paragraph("<i>No image found</i>", styles['MotoDetailText'])
             else:
-                # Usar una imagen de placeholder para el PDF si no hay URL o no existe
                 placeholder_path = os.path.join(app.root_path, 'static', 'images', 'placeholder.jpg')
                 if os.path.exists(placeholder_path):
                     try:
@@ -454,9 +448,9 @@ def export_pdf_motos():
                 else:
                     img_element = Paragraph("<i>No image</i>", styles['MotoDetailText'])
 
-            # --- Contenido de las Celdas ---
+            # CAMBIO: Construir la información de la moto con Marca y Modelo
             moto_info = Paragraph(
-                f"<b>{moto.nombre}</b><br/>"
+                f"<b>{moto.marca}</b><br/>"
                 f"{moto.modelo}<br/>"
                 f"Año: {moto.año}",
                 styles['MotoDetailText']
@@ -473,47 +467,39 @@ def export_pdf_motos():
                 desc_info
             ])
 
-        # Crear la tabla
-        # La tabla se crea con 4 columnas: Imagen, Nombre/Modelo/Año, Precio, Descripción
         table = Table(data, colWidths=col_widths)
         
-        # --- Estilo de la Tabla Mejorado ---
         table.setStyle(TableStyle([
-            ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#3498DB')), # Azul para el encabezado
+            ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#3498DB')),
             ('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke),
-            ('ALIGN', (0,0), (-1,-1), 'CENTER'), # Alineación general
-            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'), # Centrado vertical para todo
+            ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
             ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
             ('BOTTOMPADDING', (0,0), (-1,0), 12),
-            ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#BDC3C7')), # Bordes grises suaves
-            ('BACKGROUND', (0,1), (-1,-1), colors.HexColor('#ECF0F1')), # Gris claro para filas impares
-            ('BACKGROUND', (0,1), (-1,-1), colors.HexColor('#FFFFFF')), # Blanco para filas pares (si se alterna)
-            ('ROWBACKGROUNDS', (0,0), (-1,-1), [colors.HexColor('#FFFFFF'), colors.HexColor('#ECF0F1')]), # Alternar blanco y gris claro
+            ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#BDC3C7')),
+            ('ROWBACKGROUNDS', (0,0), (-1,-1), [colors.HexColor('#FFFFFF'), colors.HexColor('#ECF0F1')]),
             ('LEFTPADDING', (0,0), (-1,-1), 6),
             ('RIGHTPADDING', (0,0), (-1,-1), 6),
             ('TOPPADDING', (0,0), (-1,-1), 6),
             ('BOTTOMPADDING', (0,0), (-1,-1), 6),
             
-            # Alineación específica para la imagen y texto
-            ('ALIGN', (0,1), (0,-1), 'CENTER'), # Imágenes centradas
-            ('ALIGN', (1,1), (1,-1), 'LEFT'),   # Nombre/Modelo/Año a la izquierda
-            ('ALIGN', (2,1), (2,-1), 'RIGHT'),  # Precio a la derecha
-            ('ALIGN', (3,1), (3,-1), 'LEFT'),   # Descripción a la izquierda
-            ('VALIGN', (0,0), (-1,-1), 'TOP'), # Alineación vertical superior para todas las celdas (especialmente descripción)
+            ('ALIGN', (0,1), (0,-1), 'CENTER'),
+            ('ALIGN', (1,1), (1,-1), 'LEFT'),
+            ('ALIGN', (2,1), (2,-1), 'RIGHT'),
+            ('ALIGN', (3,1), (3,-1), 'LEFT'),
+            ('VALIGN', (0,0), (-1,-1), 'TOP'),
         ]))
         Story.append(table)
-        Story.append(Spacer(1, 0.5 * inch)) # Espacio entre marcas
+        Story.append(Spacer(1, 0.5 * inch))
 
-    # Construir el PDF
     doc.build(Story)
     
-    # Mover el puntero al inicio del buffer antes de enviarlo
     buffer.seek(0)
     
     return send_file(
         buffer,
         as_attachment=True,
-        download_name='catalogo_motos_motoshop.pdf', # Nombre del archivo al descargar
+        download_name='catalogo_motos_motoshop.pdf',
         mimetype='application/pdf'
     )
 
@@ -525,7 +511,7 @@ if __name__ == '__main__':
 
         if not User.query.filter_by(username='admin').first():
             admin_user = User(username='admin')
-            admin_user.set_password('Th1Nk3R23524') # Contraseña para tu administrador
+            admin_user.set_password('Th1Nk3R23524')
             db.session.add(admin_user)
             db.session.commit()
             print("----------------------------------------------------------------------")
@@ -538,26 +524,27 @@ if __name__ == '__main__':
         if not Moto.query.first():
             print("Motorcycle database empty, adding sample data...")
             sample_motos = [
-                Moto(nombre="Leoncino 500", marca="Benelli", modelo="BJ500", año=2023, precio=6999.00, descripcion="Una scrambler moderna con diseño italiano y un motor bicilíndrico emocionante.", imagen_url="images/uploads/benelli-bj500.png"),
-                Moto(nombre="650NK", marca="CFMoto", modelo="CF650NK", año=2024, precio=6499.00, descripcion="Naked de media cilindrada, potente y ágil, con un estilo agresivo.", imagen_url="images/uploads/cfmoto-cf650nk.png"),
-                Moto(nombre="Xtreme 160R", marca="Hero", modelo="Xtreme160R", año=2023, precio=2500.00, descripcion="Moto deportiva urbana con un rendimiento ágil y eficiente para el día a día.", imagen_url="images/uploads/hero-xtreme160r.png"),
-                Moto(nombre="CB1000R", marca="Honda", modelo="CB1000R", año=2024, precio=12999.00, descripcion="Neo Sports Café, una naked de diseño minimalista con el potente motor de la Fireblade.", imagen_url="images/uploads/honda-cb1000r.png"),
-                Moto(nombre="Z900RS", marca="Kawasaki", modelo="Z900RS", año=2023, precio=11999.00, descripcion="Un tributo moderno a la Z1 original, con un estilo retro y un rendimiento de vanguardia.", imagen_url="images/uploads/kawasaki-z900rs.png"),
-                Moto(nombre="K-Light 202", marca="Keeway", modelo="K-Light202", año=2022, precio=3199.00, descripcion="Cruiser compacta con un estilo clásico y fácil manejo para la ciudad.", imagen_url="images/uploads/keeway-k-light202.png"),
-                Moto(nombre="1290 Super Duke R", marca="KTM", modelo="1290 SDR", año=2024, precio=19999.00, descripcion="La 'Bestia' de KTM, una hypernaked con un motor V-Twin brutal y componentes de alta gama.", imagen_url="images/uploads/ktm-1290-sdr.png"),
-                Moto(nombre="Skua 250", marca="Motomel", modelo="Skua250", año=2023, precio=3499.00, descripcion="Una moto trail versátil, diseñada para afrontar terrenos variados con comodidad y robustez.", imagen_url="images/uploads/motomel-skua250.png"),
-                Moto(nombre="Continental GT 650", marca="Royal Enfield", modelo="CGT650", año=2024, precio=7499.00, descripcion="Cafe racer clásica con un diseño atemporal y un motor bicilíndrico suave.", imagen_url="images/uploads/royal-enfield-cgt650.png"),
-                Moto(nombre="RX400", marca="Serna", modelo="RX400", año=2023, precio=4200.00, descripcion="Trail de aventura, robusta y preparada para explorar cualquier camino, con un buen equilibrio entre carretera y off-road.", imagen_url="images/uploads/serna-rx400.png"),
-                Moto(nombre="TC Max", marca="Super Soco", modelo="TCMax", año=2024, precio=5499.00, descripcion="Motocicleta eléctrica de estilo urbano y prestaciones sorprendentes, ideal para la movilidad sostenible.", imagen_url="images/uploads/super-soco-tcmax.png"),
-                Moto(nombre="GSX-R1000R", marca="Suzuki", modelo="GSX-R1000R", año=2023, precio=16000.00, descripcion="Superbike pura, diseñada para ofrecer el máximo rendimiento en pista y una experiencia de conducción inigualable.", imagen_url="images/uploads/suzuki-gsx-r1000r.png"),
-                Moto(nombre="Apache RR 310", marca="TVS", modelo="RR310", año=2024, precio=4500.00, descripcion="Sportbike carenada con un diseño agresivo y tecnología inspirada en las carreras.", imagen_url="images/uploads/tvs-rr310.png"),
-                Moto(nombre="DSR Adventure 200", marca="UM", modelo="DSR200", año=2023, precio=3800.00, descripcion="Una motocicleta de doble propósito diseñada para la aventura, con un rendimiento sólido en carretera y fuera de ella.", imagen_url="images/uploads/um-dsr200.png"),
-                Moto(nombre="GTS 300 SuperTech", marca="Vespa", modelo="GTS300", año=2024, precio=8500.00, descripcion="El scooter más potente de Vespa, combina la conectividad y la tecnología con el icónico estilo italiano.", imagen_url="images/uploads/vespa-gts300.png"),
-                Moto(nombre="Panigale V4 R", marca="Ducati", modelo="V4R", año=2024, precio=42995.00, descripcion="La Panigale V4 R es la expresión máxima de la deportividad Ducati, con un motor de 998 cc derivado de MotoGP.", imagen_url="images/uploads/ducati-v4r.png"),
-                Moto(nombre="S 1000 RR", marca="BMW", modelo="S1000RR", año=2024, precio=18995.00, descripcion="La BMW S 1000 RR es una superbike de alto rendimiento, diseñada para la pista pero igualmente impresionante en carretera.", imagen_url="images/uploads/bmw-s1000rr.png"),
-                Moto(nombre="Speed Triple 1200 RS", marca="Triumph", modelo="1200RS", año=2024, precio=18500.00, descripcion="La Speed Triple 1200 RS es la naked deportiva definitiva de Triumph, con un rendimiento explosivo y tecnología avanzada.", imagen_url="images/uploads/triumph-1200rs.png"),
-                Moto(nombre="YZF-R1M", marca="Yamaha", modelo="R1M", año=2024, precio=26999.00, descripcion="La Yamaha YZF-R1M es la versión más exclusiva de la R1, con componentes de competición y telemetría avanzada.", imagen_url="images/uploads/yamaha-r1m.png"),
-                Moto(nombre="Nightster Special", marca="Harley-Davidson", modelo="RH975S", año=2024, precio=14999.00, descripcion="La Harley-Davidson Nightster Special combina la tradición cruiser con un motor Revolution Max 975T de última generación.", imagen_url="images/uploads/harley-davidson-rh975s.png")
+                # CAMBIO: Los datos de ejemplo ya no tienen el campo 'nombre'
+                Moto(marca="Benelli", modelo="Leoncino 500", año=2023, precio=6999.00, descripcion="Una scrambler moderna con diseño italiano y un motor bicilíndrico emocionante.", imagen_url="images/uploads/benelli-leoncino-500.png"), # Nombre de archivo ajustado
+                Moto(marca="CFMoto", modelo="650NK", año=2024, precio=6499.00, descripcion="Naked de media cilindrada, potente y ágil, con un estilo agresivo.", imagen_url="images/uploads/cfmoto-650nk.png"),
+                Moto(marca="Hero", modelo="Xtreme 160R", año=2023, precio=2500.00, descripcion="Moto deportiva urbana con un rendimiento ágil y eficiente para el día a día.", imagen_url="images/uploads/hero-xtreme-160r.png"),
+                Moto(marca="Honda", modelo="CB1000R", año=2024, precio=12999.00, descripcion="Neo Sports Café, una naked de diseño minimalista con el potente motor de la Fireblade.", imagen_url="images/uploads/honda-cb1000r.png"),
+                Moto(marca="Kawasaki", modelo="Z900RS", año=2023, precio=11999.00, descripcion="Un tributo moderno a la Z1 original, con un estilo retro y un rendimiento de vanguardia.", imagen_url="images/uploads/kawasaki-z900rs.png"),
+                Moto(marca="Keeway", modelo="K-Light 202", año=2022, precio=3199.00, descripcion="Cruiser compacta con un estilo clásico y fácil manejo para la ciudad.", imagen_url="images/uploads/keeway-k-light-202.png"),
+                Moto(marca="KTM", modelo="1290 Super Duke R", año=2024, precio=19999.00, descripcion="La 'Bestia' de KTM, una hypernaked con un motor V-Twin brutal y componentes de alta gama.", imagen_url="images/uploads/ktm-1290-super-duke-r.png"),
+                Moto(marca="Motomel", modelo="Skua 250", año=2023, precio=3499.00, descripcion="Una moto trail versátil, diseñada para afrontar terrenos variados con comodidad y robustez.", imagen_url="images/uploads/motomel-skua-250.png"),
+                Moto(marca="Royal Enfield", modelo="Continental GT 650", año=2024, precio=7499.00, descripcion="Cafe racer clásica con un diseño atemporal y un motor bicilíndrico suave.", imagen_url="images/uploads/royal-enfield-continental-gt-650.png"),
+                Moto(marca="Serna", modelo="RX400", año=2023, precio=4200.00, descripcion="Trail de aventura, robusta y preparada para explorar cualquier camino, con un buen equilibrio entre carretera y off-road.", imagen_url="images/uploads/serna-rx400.png"),
+                Moto(marca="Super Soco", modelo="TC Max", año=2024, precio=5499.00, descripcion="Motocicleta eléctrica de estilo urbano y prestaciones sorprendentes, ideal para la movilidad sostenible.", imagen_url="images/uploads/super-soco-tc-max.png"),
+                Moto(marca="Suzuki", modelo="GSX-R1000R", año=2023, precio=16000.00, descripcion="Superbike pura, diseñada para ofrecer el máximo rendimiento en pista y una experiencia de conducción inigualable.", imagen_url="images/uploads/suzuki-gsx-r1000r.png"),
+                Moto(marca="TVS", modelo="Apache RR 310", año=2024, precio=4500.00, descripcion="Sportbike carenada con un diseño agresivo y tecnología inspirada en las carreras.", imagen_url="images/uploads/tvs-apache-rr-310.png"),
+                Moto(marca="UM", modelo="DSR Adventure 200", año=2023, precio=3800.00, descripcion="Una motocicleta de doble propósito diseñada para la aventura, con un rendimiento sólido en carretera y fuera de ella.", imagen_url="images/uploads/um-dsr-adventure-200.png"),
+                Moto(marca="Vespa", modelo="GTS 300 SuperTech", año=2024, precio=8500.00, descripcion="El scooter más potente de Vespa, combina la conectividad y la tecnología con el icónico estilo italiano.", imagen_url="images/uploads/vespa-gts-300-supertech.png"),
+                Moto(marca="Ducati", modelo="Panigale V4 R", año=2024, precio=42995.00, descripcion="La Panigale V4 R es la expresión máxima de la deportividad Ducati, con un motor de 998 cc derivado de MotoGP.", imagen_url="images/uploads/ducati-panigale-v4-r.png"),
+                Moto(marca="BMW", modelo="S 1000 RR", año=2024, precio=18995.00, descripcion="La BMW S 1000 RR es una superbike de alto rendimiento, diseñada para la pista pero igualmente impresionante en carretera.", imagen_url="images/uploads/bmw-s-1000-rr.png"),
+                Moto(marca="Triumph", modelo="Speed Triple 1200 RS", año=2024, precio=18500.00, descripcion="La Speed Triple 1200 RS es la naked deportiva definitiva de Triumph, con un rendimiento explosivo y tecnología avanzada.", imagen_url="images/uploads/triumph-speed-triple-1200-rs.png"),
+                Moto(marca="Yamaha", modelo="YZF-R1M", año=2024, precio=26999.00, descripcion="La Yamaha YZF-R1M es la versión más exclusiva de la R1, con componentes de competición y telemetría avanzada.", imagen_url="images/uploads/yamaha-yzf-r1m.png"),
+                Moto(marca="Harley-Davidson", modelo="Nightster Special", año=2024, precio=14999.00, descripcion="La Harley-Davidson Nightster Special combina la tradición cruiser con un motor Revolution Max 975T de última generación.", imagen_url="images/uploads/harley-davidson-nightster-special.png")
             ]
             db.session.add_all(sample_motos)
             db.session.commit()

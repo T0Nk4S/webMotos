@@ -2,7 +2,7 @@
 
 {% block title %}
     {% if moto %}
-        Editar Moto: {{ moto.nombre }} - MotoShop
+        Editar Moto: {{ moto.marca }} {{ moto.modelo }} - MotoShop {# CAMBIADO #}
     {% else %}
         Añadir Nueva Moto - MotoShop
     {% endif %}
@@ -13,15 +13,16 @@
     <div class="form-container">
         <h1>
             {% if moto %}
-                Editar Moto
+                Editar Moto: {{ moto.marca }} {{ moto.modelo }} {# CAMBIADO #}
             {% else %}
                 Añadir Nueva Moto
             {% endif %}
         </h1>
 
         <form method="POST" enctype="multipart/form-data">
-            {{ form.csrf_token }} {# Correcto: Campo CSRF oculto para seguridad #}
+            {{ form.csrf_token }}
 
+            {# ELIMINADO: Campo de nombre
             <div class="form-group">
                 {{ form.nombre.label }}
                 {{ form.nombre(class_="form-control") }}
@@ -33,6 +34,7 @@
                     </div>
                 {% endif %}
             </div>
+            #}
 
             <div class="form-group">
                 {{ form.marca.label }}
@@ -60,7 +62,7 @@
 
             <div class="form-group">
                 {{ form.año.label }}
-                {{ form.año(class_="form-control", type="number") }} {# Asegura el tipo number para el input #}
+                {{ form.año(class_="form-control", type="number") }}
                 {% if form.año.errors %}
                     <div class="help-block">
                         {% for error in form.año.errors %}
@@ -72,7 +74,7 @@
 
             <div class="form-group">
                 {{ form.precio.label }}
-                {{ form.precio(class_="form-control", type="number", step="0.01") }} {# Asegura el tipo number y paso para decimales #}
+                {{ form.precio(class_="form-control", type="number", step="0.01") }}
                 {% if form.precio.errors %}
                     <div class="help-block">
                         {% for error in form.precio.errors %}
@@ -104,17 +106,16 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-                
-                {# Mostrar imagen actual si estamos editando y existe #}
+
                 {% if moto and moto.imagen_url %}
                     <div class="current-image mt-3">
                         <p>Imagen actual:</p>
-                        <img src="{{ url_for('static', filename=moto.imagen_url) }}" alt="Imagen actual de {{ moto.nombre }}" class="img-thumbnail">
+                        <img src="{{ url_for('static', filename=moto.imagen_url) }}" alt="Imagen actual de {{ moto.marca }} {{ moto.modelo }}" class="img-thumbnail"> {# CAMBIADO #}
                     </div>
                 {% endif %}
             </div>
 
-            {{ form.submit(class_="btn submit-btn") }}
+            <button type="submit" class="btn submit-btn">Guardar Moto</button> {# Reemplazado form.submit() por un botón HTML estándar si no tienes un SubmitField explícito #}
         </form>
         <div class="mt-3 text-center">
             <a href="{{ url_for('admin_motos') }}" class="btn btn-secondary">Volver a la Administración</a>
