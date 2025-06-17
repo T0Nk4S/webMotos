@@ -8,7 +8,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Factura #{{ invoice.invoice_number }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">    
+    {# ENLACE A TU ARCHIVO CSS PRINCIPAL PARA DARLE ESTILO EN PANTALLA Y PARA IMPRESIÓN #}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {# Puedes añadir fuentes aquí si lo deseas, por ejemplo: #}
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="invoice-container">
@@ -42,7 +45,7 @@
 
         <div class="invoice-items-section">
             <h3>Detalle de Artículos:</h3>
-            <pre>{{ invoice.items_description }}</pre> 
+            <pre>{{ invoice.items_description | nl2br }}</pre> {# Asegúrate de usar nl2br aquí también #}
         </div>
 
         <div class="invoice-summary">
@@ -64,10 +67,11 @@
         </div>
     </div>
 
-    {# Botones que solo se muestran en el navegador, no al imprimir. Sin estilos inline. #}
+    {# Botones que solo se muestran en el navegador, no al imprimir. #}
     <div class="no-print">
-        <button onclick="window.print()">Imprimir a PDF</button>
-        <a href="{{ url_for('invoices_bp.view_invoice', invoice_id=invoice.id) }}">Volver a la Factura</a>
+        {# Usamos la clase 'btn' de tus estilos generales #}
+        <button onclick="window.print()" class="btn">Imprimir a PDF</button>
+        <a href="{{ url_for('invoices_bp.view_invoice', invoice_id=invoice.id) }}" class="btn btn-secondary">Volver a la Factura</a>
     </div>
 </body>
 </html>

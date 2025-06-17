@@ -1341,6 +1341,356 @@ section {
     border-color: #bee5eb;
 }
 
+/* --- NUEVOS ESTILOS PARA LA GESTIÓN DE FACTURAS EN PANTALLA --- */
+
+/* Estilos generales para las secciones de detalle/formulario */
+.invoice-detail-section,
+.form-section {
+    padding: 40px 0;
+    background-color: #f4f7f6; /* Fondo suave */
+    min-height: calc(100vh - 150px); /* Ajusta por la altura del header/footer */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Contenedor principal de los detalles de la factura */
+.invoice-detail-container,
+.form-container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    max-width: 800px; /* Ancho máximo para la factura y formularios */
+    margin: 0 auto;
+    text-align: left; /* Alinea el texto a la izquierda dentro del contenedor */
+    color: var(--text-on-light); /* Texto oscuro para fondo claro */
+}
+
+.invoice-detail-container h1, .form-container h1 {
+    font-size: 2.2em;
+    color: var(--heading-on-light); /* Título oscuro para fondo claro */
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--primary-color); /* Línea bajo el título */
+    padding-bottom: 10px;
+    text-align: center; /* Centrar el título dentro de su contenedor */
+}
+
+/* Encabezado del detalle de la factura */
+.invoice-header-detail {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.invoice-header-detail p {
+    font-size: 0.95em;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+/* Secciones de información (cliente, items, resumen, notas) */
+.customer-info,
+.invoice-items,
+.invoice-summary,
+.invoice-notes {
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background-color: #fdfdfd;
+}
+
+.customer-info h2,
+.invoice-items h2,
+.invoice-summary h2,
+.invoice-notes h2 {
+    font-size: 1.5em;
+    color: var(--heading-on-light);
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.customer-info p,
+.invoice-items p,
+.invoice-notes p {
+    font-size: 0.9em;
+    line-height: 1.6;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.invoice-items pre { /* Para la descripción de ítems, si se usa <pre> */
+    white-space: pre-wrap; /* Mantiene el formato pero ajusta el texto */
+    word-wrap: break-word;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.95em;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px dashed #ccc;
+    text-align: left;
+}
+
+.invoice-summary p {
+    text-align: right;
+    margin: 5px 0;
+    font-size: 1.0em;
+    color: #444;
+}
+
+.invoice-summary h3 {
+    text-align: right;
+    font-size: 1.8em;
+    color: var(--primary-color);
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 2px solid var(--dark-color);
+}
+
+.invoice-actions {
+    text-align: center;
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* Espacio entre botones */
+}
+
+/* Estilos para formularios (aplicables a add_edit_moto y add_edit_invoice) */
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--text-on-light);
+}
+
+.form-control,
+.form-control-file {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    color: #333;
+    background-color: #fff;
+}
+
+.form-control-file {
+    padding: 3px; /* Menos padding para el input de tipo file */
+}
+
+.form-control:focus,
+.form-control-file:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(220, 20, 60, 0.5); /* Sombra suave con color primario */
+    outline: none;
+}
+
+.help-block {
+    color: #dc3545; /* Color rojo para mensajes de error */
+    font-size: 0.85em;
+    margin-top: 5px;
+}
+
+.submit-btn {
+    width: auto;
+    margin-top: 20px;
+}
+
+.current-image {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.current-image img {
+    max-width: 200px;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.mt-3 { margin-top: 15px; }
+.text-center { text-align: center; }
+
+/* Estilos de la tabla de administración */
+.moto-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden; /* Asegura que los bordes redondeados se apliquen bien */
+}
+
+.moto-table th,
+.moto-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    color: var(--text-on-light);
+}
+
+.moto-table th {
+    background-color: var(--secondary-color);
+    color: var(--text-on-dark);
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+.moto-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.moto-table tbody tr:hover {
+    background-color: #f0f0f0;
+}
+
+.moto-table img {
+    max-width: 80px;
+    height: auto;
+    border-radius: 4px;
+    vertical-align: middle;
+}
+
+.moto-actions {
+    display: flex;
+    gap: 8px; /* Espacio entre botones de acción */
+    flex-wrap: wrap; /* Permite que los botones se envuelvan en líneas si no hay espacio */
+    justify-content: center; /* Centra los botones si se envuelven */
+}
+
+/* Para el botón de "Gestionar Facturas" en admin_motos.html */
+.admin-header .btn-info {
+    margin-left: 20px; /* Separación del botón de PDF */
+}
+
+/* --- Estilos específicos para la plantilla de impresión (invoice_template.html) --- */
+/* Estos estilos se aplicarán cuando la página sea visualizada en pantalla Y al imprimir */
+.invoice-container {
+    max-width: 210mm; /* Ancho A4 */
+    margin: 30px auto; /* Margen superior/inferior para la vista en pantalla */
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 20mm;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+}
+.invoice-container h1, .invoice-container h2, .invoice-container h3 {
+    color: #2C3E50; /* Azul oscuro para los títulos en la factura */
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30mm;
+    border-bottom: 2px solid #2C3E50;
+    padding-bottom: 10mm;
+}
+.invoice-header .logo {
+    flex: 1;
+    text-align: left;
+}
+.invoice-header .logo h1 {
+    font-size: 36px;
+    color: var(--primary-color); /* El logo en la factura con color primario */
+    margin: 0;
+}
+.invoice-header .company-info {
+    flex: 1;
+    text-align: right;
+    font-size: 10px;
+    line-height: 1.4;
+}
+.invoice-header .company-info p {
+    margin: 0;
+}
+.invoice-details {
+    text-align: right;
+    margin-bottom: 20mm;
+}
+.invoice-details h2 {
+    font-size: 28px;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+.invoice-details p {
+    margin: 0;
+    font-size: 14px;
+}
+.customer-billing-info, .invoice-items-section {
+    margin-bottom: 20mm;
+}
+.customer-billing-info h3, .invoice-items-section h3, .invoice-summary h3, .invoice-notes h3 {
+    font-size: 18px;
+    color: #2C3E50;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+.customer-billing-info p {
+    font-size: 12px;
+    margin: 2px 0;
+}
+.invoice-items-section pre { /* Usar pre para items_description */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px dashed #ddd;
+    border-radius: 4px;
+}
+.invoice-summary {
+    text-align: right;
+    margin-top: 30mm;
+}
+.invoice-summary p {
+    font-size: 14px;
+    margin: 5px 0;
+}
+.invoice-summary .total {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--primary-color);
+    border-top: 2px solid #2C3E50;
+    padding-top: 10px;
+    margin-top: 15px;
+}
+.invoice-notes {
+    margin-top: 20mm;
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+}
+.invoice-footer {
+    text-align: center;
+    margin-top: 40mm;
+    padding-top: 10mm;
+    border-top: 1px dashed #ddd;
+    font-size: 10px;
+    color: #777;
+}
+
+/* Botones que solo se muestran en el navegador, no al imprimir. */
+.no-print {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 40px; /* Para que no esté pegado al final de la página */
+}
+.no-print .btn {
+    margin: 0 10px; /* Espacio entre los botones */
+}
+
 /* --- Responsive Adjustments --- */
 @media (max-width: 1024px) {
     .main-header .container {

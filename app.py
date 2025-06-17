@@ -7,14 +7,12 @@ from flask import Flask, flash, session, redirect, url_for, request, render_temp
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import re # Necesario para el filtro nl2br
 
-# IMPORTANTE: Importa 'db' y 'login_required' desde el nuevo archivo 'extensions.py'
-from extensions import db, login_required # <--- CAMBIO AQUÍ
+from extensions import db, login_required
 
-# Ahora, importa los modelos (que a su vez importarán 'db' desde 'extensions.py')
 from models import User, Moto, Invoice
 
-# Importa los Blueprints desde sus respectivos módulos en la carpeta 'routes'
 from routes.main import main_bp
 from routes.admin import admin_bp
 from routes.invoices import invoices_bp
@@ -45,15 +43,21 @@ app.register_blueprint(main_bp)
 app.register_blueprint(admin_bp, url_prefix='/admin')
 app.register_blueprint(invoices_bp, url_prefix='/admin/invoices')
 
+# --- Filtro Jinja2 personalizado: nl2br (New Line to Break) ---
+@app.template_filter('nl2br')
+def nl2br_filter(s):
+    """Convierte saltos de línea en etiquetas <br />."""
+    if s is None:
+        return ''
+    # Reemplaza saltos de línea con <br />
+    return s.replace('\n', '<br />')
+
 # --- Rutas de Autenticación (se mantienen aquí por ser globales o puntos de entrada principales) ---
-# ELIMINADO: La definición local de 'login_required' se ha movido a 'extensions.py'
-# from functools import wraps # Ya no es necesario importar aquí
 
 @app.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
     if 'logged_in' in session and session['logged_in']:
         flash('Ya has iniciado sesión.', 'info')
-        # NOTA: url_for necesita el nombre completo de la ruta del blueprint: blueprint_name.function_name
         return redirect(url_for('admin_bp.admin_motos'))
 
     if request.method == 'POST':
