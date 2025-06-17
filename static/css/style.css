@@ -180,8 +180,7 @@ h1, h2, h3 {
     pointer-events: none; /* Se mantiene para no interferir con los clics */
 }
 
-/* --- SOLUCIÓN CLAVE: Anular el efecto hover del ::before específicamente para el LI del botón Admin --- */
-/* Cuando el botón Admin está presente (usuario no logueado), es el último <li>. */
+
 /* Le decimos que su ::before NO debe cambiar al hacer hover sobre él. */
 .navbar-collapse ul li:last-child:hover::before {
     opacity: 0 !important;
