@@ -1,15 +1,34 @@
+{# templates/navbar.html #}
+{# Barra de navegación principal de la aplicación. #}
+
 <header class="main-header">
     <div class="container">
-        <div class="logo">
-            <a href="{{ url_for('index') }}">Moto<span>Shop</span></a>
-        </div>
-        <nav class="main-nav">
+        {# LOGO DE LA TIENDA #}
+        <a href="{{ url_for('main_bp.index') }}" class="logo">Moto<span>Shop</span></a> 
+
+        {# TOGGLE PARA MÓVIL (ICONO DE HAMBURGUESA) #}
+        <button class="navbar-toggler" type="button" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        {# MENÚ DE NAVEGACIÓN #}
+        <nav class="navbar-collapse" id="navbar-collapse">
             <ul>
-                <li><a href="{{ url_for('index') }}">Inicio</a></li>
-                <li><a href="{{ url_for('catalogo_completo') }}">Catálogo</a></li>
+                <li><a href="{{ url_for('main_bp.index') }}">Inicio</a></li>
+                <li><a href="{{ url_for('main_bp.catalogo_completo') }}">Catálogo</a></li>
+                <li><a href="#about">Nosotros</a></li>
+                <li><a href="#contact">Contacto</a></li>
+                
+                {# Enlaces específicos para el administrador, visibles solo si está logueado #}
+                {% if session.logged_in %}
+                    <li><a href="{{ url_for('admin_bp.admin_motos') }}">Admin Motos</a></li>
+                    <li><a href="{{ url_for('invoices_bp.admin_invoices') }}">Gestión Facturas</a></li>
+                    <li><a href="{{ url_for('admin_logout') }}">Cerrar Sesión</a></li>
+                {% else %}
+                    {# Botón secreto de Admin, gestionado por JS #}
+                    <li><button id="admin-secret-btn" class="btn-admin-secret"></button></li>
+                {% endif %}
             </ul>
         </nav>
-        {# ASEGÚRATE QUE ESTE DIV ESTÁ PRESENTE: #}
-        <div id="admin-secret-btn" class="admin-secret-spot" title="Acceso de Administrador"></div>
     </div>
 </header>

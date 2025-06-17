@@ -39,7 +39,6 @@ ul {
 
 h1, h2, h3 {
     color: var(--heading-on-dark); /* Por defecto oscuros, serán sobreescritos en secciones claras */
-    margin-bottom: 15px;
 }
 
 /* Botones */
@@ -75,7 +74,6 @@ h1, h2, h3 {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
-
 /* Header */
 .main-header {
     background: linear-gradient(to right, var(--dark-color), var(--darker-primary-color));
@@ -123,23 +121,46 @@ h1, h2, h3 {
     color: var(--primary-color);
 }
 
-.main-nav ul {
-    display: flex;
-    height: 100%;
+/* --- REGLAS para el TOGGLER (botón hamburguesa) --- */
+.navbar-toggler {
+    background-color: transparent;
+    border: none;
+    color: #fff; /* Color del icono */
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: none; /* Oculto por defecto en desktop */
+    padding: 10px;
+    z-index: 1001; /* Asegura que esté por encima de otros elementos */
 }
 
-.main-nav ul li {
-    margin-left: 30px; /* Espacio entre items */
+/* --- REGLAS para el CONTENEDOR del MENÚ NAV (.navbar-collapse) --- */
+.navbar-collapse {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: flex-end; /* Alinea los ítems a la derecha en desktop */
+    flex-grow: 1; /* Permite que ocupe el espacio disponible */
+}
+
+.navbar-collapse ul {
+    display: flex;
+    height: 100%;
+    align-items: center; /* Alinea verticalmente los items de la lista */
+    margin: 0; /* Asegura que no haya margen extra en la lista */
+}
+
+.navbar-collapse ul li {
+    margin-left: 30px;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
+    position: relative; /* Necesario para que ::before se posicione correctamente */
     overflow: hidden;
-    background: transparent; /* Asegura un fondo transparente por defecto */
+    background: transparent;
 }
 
-.main-nav ul li::before {
+.navbar-collapse ul li::before {
     content: '';
     position: absolute;
     top: 0;
@@ -149,52 +170,98 @@ h1, h2, h3 {
     opacity: 0;
     transition: opacity 0.3s ease, background 0.3s ease;
     z-index: 0;
+    pointer-events: none; /* ¡Permite que los clics pasen a través! */
 }
 
-/* EFECTO HOVER PARA EL NAVBAR NO SCROLLED */
-.main-nav ul li:hover::before {
-    background: var(--darker-primary-color); /* Fondo sólido más oscuro para un hover notorio */
+/* EFECTO HOVER PARA LOS ENLACES DEL NAVBAR (se aplica a todos los LI por defecto) */
+.navbar-collapse ul li:hover::before {
+    background: var(--darker-primary-color);
     opacity: 1;
+    pointer-events: none; /* Se mantiene para no interferir con los clics */
+}
+
+/* --- SOLUCIÓN CLAVE: Anular el efecto hover del ::before específicamente para el LI del botón Admin --- */
+/* Cuando el botón Admin está presente (usuario no logueado), es el último <li>. */
+/* Le decimos que su ::before NO debe cambiar al hacer hover sobre él. */
+.navbar-collapse ul li:last-child:hover::before {
+    opacity: 0 !important;
+    background: transparent !important;
 }
 
 /* Estilo del pseudo-elemento cuando el header está en estado 'scrolled' */
-.main-header.scrolled .main-nav ul li::before {
-    opacity: 0; /* Sigue siendo invisible por defecto */
+.main-header.scrolled .navbar-collapse ul li::before {
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* Efecto al pasar el cursor sobre la opción de navegación CUANDO EL HEADER SÍ ESTÁ SCROLLED */
-.main-header.scrolled .main-nav ul li:hover::before {
-    background: var(--primary-color); /* Fondo sólido carmesí en hover scrolled */
+.main-header.scrolled .navbar-collapse ul li:hover::before {
+    background: var(--primary-color);
     opacity: 1;
+    pointer-events: none;
 }
 
-.main-nav ul li a {
-    color: var(--text-on-dark);
+/* Estilos base para enlaces (<a>) y el botón admin (<button>) dentro de los li del navbar */
+.navbar-collapse ul li a,
+.navbar-collapse ul li .btn-admin-secret {
+    color: var(--text-on-dark); /* Color de texto predeterminado para elementos de navegación */
     font-weight: bold;
     font-size: 1.1rem;
     transition: color 0.4s ease, font-size 0.4s ease;
     position: relative;
-    z-index: 1;
+    z-index: 1; /* Asegura que estén por encima del ::before */
     padding: 0 10px;
-    height: 50px; /* Asegura que el enlace ocupe toda la altura del nav item */
+    height: 50px;
     justify-content: center;
     align-items: center;
     display: flex;
+    background-color: transparent; /* Por defecto transparente */
+    box-shadow: none; /* Sin sombra por defecto */
+    transform: none; /* Sin transformación por defecto */
 }
 
-.main-nav ul li a:hover {
+.navbar-collapse ul li a:hover {
     color: var(--text-on-dark); /* Mantiene el color del texto blanco/crema */
 }
 
 .main-header.scrolled .logo a,
-.main-header.scrolled .main-nav ul li a {
+.main-header.scrolled .navbar-collapse ul li a,
+.main-header.scrolled .navbar-collapse ul li .btn-admin-secret {
     color: var(--text-on-dark);
 }
 
-.main-header.scrolled .main-nav ul li a {
-    font-size: 1rem; /* Tamaño de fuente más pequeño al hacer scroll */
-    height: 100px; /* Asegura que el enlace ocupe toda la altura del header */
+.main-header.scrolled .navbar-collapse ul li a,
+.main-header.scrolled .navbar-collapse ul li .btn-admin-secret {
+    font-size: 1rem;
+    height: 100px;
 }
+
+/* --- REGLAS para el BOTÓN ADMIN COMPLETAMENTE IMPERCEPTIBLE --- */
+/* Estas reglas anulan cualquier estilo general y lo hacen invisible/sin interacción visual */
+.btn-admin-secret {
+    background-color: transparent !important; /* Fuerza la transparencia del fondo */
+    color: transparent !important; /* Fuerza la transparencia del texto */
+    border: none !important; /* Elimina cualquier borde */
+    padding: 0 !important; /* Elimina cualquier padding */
+    margin: 0 !important; /* Elimina cualquier margen */
+    width: 50px; /* Un tamaño de área clicable razonable */
+    height: 50px;
+    cursor: default !important; /* ¡IMPORTANTE! El cursor no cambia a puntero */
+    position: relative; /* Necesario para z-index */
+    z-index: 2 !important; /* Asegura que esté por encima del ::before y del enlace */
+    transition: none !important; /* Evita cualquier animación */
+    overflow: hidden; /* Oculta cualquier texto o contenido que se desborde */
+}
+
+/* Al pasar el mouse por el botón Admin, NO debe haber ningún cambio visual */
+.btn-admin-secret:hover {
+    background-color: transparent !important;
+    color: transparent !important;
+    transform: none !important;
+    box-shadow: none !important;
+    cursor: default !important; /* Asegura que el cursor no cambie al hacer hover */
+}
+
 
 /* Secciones Generales */
 section {
@@ -1303,107 +1370,61 @@ section {
         gap: 10px; /* Reduce un poco el espacio */
     }
 }
+/* --- Media Queries para Móviles: Comportamiento del Navbar --- */
+@media (max-width: 768px) { /* Puedes ajustar este breakpoint si lo deseas */
+    .navbar-toggler {
+        display: block; /* Muestra el botón hamburguesa en pantallas pequeñas */
+    }
 
-@media (max-width: 768px) {
-    .main-header {
-        height: 60px;
-    }
-    .main-header.scrolled {
-        height: 50px;
-    }
-    .main-header .logo a {
-        font-size: 1.5rem;
-    }
-    .main-nav ul li {
-        margin-left: 15px;
-    }
-    .main-nav ul li a {
-        font-size: 0.9rem;
-    }
-    .hero-section {
-        height: 70vh;
-        padding-top: 60px;
-    }
-    .hero-section h2 {
-        font-size: 2.2rem;
-    }
-    .hero-section p {
-        font-size: 1rem;
-    }
-    .catalog-section h1, .services-section h1, .about-section h2, .contact-section h2 {
-        font-size: 2.5rem;
-    }
-    .swiper-container {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-    .motorcycle-card {
-        max-width: 90%;
-        height: 400px;
-    }
-    .motorcycle-card .card-content h3 {
-        font-size: 1.5rem;
-    }
-    .motorcycle-card .card-content .price {
-        font-size: 1.4rem;
-    }
-    .logos-grid {
-        /* CAMBIO CLAVE: 2 columnas para tablets */
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px; /* Espacio consistente */
-        padding: 15px;
-    }
-    .logo-item {
-        height: 120px; /* Ajuste de altura */
-        padding: 15px;
-    }
-    .service-grid {
-        grid-template-columns: 1fr;
-    }
-    .contact-form {
-        padding: 20px;
-    }
-    .detail-card {
-        flex-direction: column;
-        margin: 0 10px;
-    }
-    .detail-content {
-        padding: 25px;
-    }
-    .detail-content h1 {
-        font-size: 2.2rem;
-    }
-    .detail-content .moto-price {
-        font-size: 1.8rem;
-    }
-    .detail-content .moto-description h2 {
-        font-size: 1.4rem;
-    }
-    .full-catalog-grid {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        padding: 0 10px;
-    }
-    .filter-form {
-        padding: 20px;
-        gap: 10px;
-    }
-    .filter-group.price-range {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .filter-group.price-range input {
+    .navbar-collapse {
+        /* Oculta el menú por defecto en móvil */
+        display: none; 
+        flex-direction: column; /* Apila los ítems verticalmente */
+        position: absolute;
+        top: 50px; /* Colócalo justo debajo del header */
+        left: 0;
         width: 100%;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), var(--darker-primary-color)); /* Fondo para el menú desplegado */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        padding: 20px 0;
+        max-height: calc(100vh - 50px); /* Ajusta la altura máxima para que no se salga de la pantalla */
+        overflow-y: auto; /* Si el menú es muy largo, permite scroll */
+        z-index: 999; /* Por debajo del header, pero por encima del contenido */
     }
-    .filter-group.price-range span {
-        margin: 5px 0;
+
+    .navbar-collapse.show {
+        display: flex; /* Muestra el menú cuando tiene la clase 'show' (controlado por scripts.js) */
+    }
+
+    .navbar-collapse ul {
+        flex-direction: column; /* Asegura que la lista se apile verticalmente */
+        width: 100%;
+        height: auto; /* Altura automática para el contenido del menú */
+    }
+
+    .navbar-collapse ul li {
+        margin: 0; /* Elimina márgenes laterales */
+        width: 100%;
+        height: auto;
+        padding: 10px 20px; /* Relleno para cada ítem del menú */
         text-align: center;
     }
-    .filter-form .btn {
+
+    .navbar-collapse ul li a,
+    .navbar-collapse ul li .btn-admin-secret { /* Estilo para los enlaces y el botón dentro del menú móvil */
         width: 100%;
-        margin-top: 15px;
+        padding: 10px 0;
+        display: block;
+        font-size: 1.2rem;
+        color: #fff;
+        text-align: center;
+    }
+
+    .navbar-collapse ul li a:hover,
+    .navbar-collapse ul li .btn-admin-secret:hover {
+        background-color: rgba(255, 255, 255, 0.1); /* Fondo ligero al pasar el ratón en móvil */
     }
 }
-
 @media (max-width: 480px) {
     .main-nav ul {
         flex-wrap: wrap;

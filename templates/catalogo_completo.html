@@ -9,7 +9,8 @@
         <p class="description">Descubre todas las motocicletas disponibles en nuestra tienda. Utiliza los filtros para encontrar tu moto ideal.</p>
 
         <!-- Formulario de Filtrado y Búsqueda -->
-        <form class="filter-form" method="GET" action="{{ url_for('catalogo_completo') }}">
+        {# CORRECCIÓN: url_for para la acción del formulario #}
+        <form class="filter-form" method="GET" action="{{ url_for('main_bp.catalogo_completo') }}">
             <div class="filter-group">
                 <label for="search_query">Buscar:</label>
                 <input type="text" id="search_query" name="search_query" placeholder="Nombre, marca, modelo..." value="{{ search_query }}">
@@ -43,18 +44,20 @@
             </div>
             
             <button type="submit" class="btn filter-btn">Filtrar</button>
-            {# **Ajuste clave aquí:** Se eliminó el onclick y se añadió un id para manejar el evento con JS #}
+            {# Se mantiene el ID para que scripts.js lo maneje #}
             <button type="button" class="btn btn-secondary clear-filters-btn" id="clearFiltersBtn">Limpiar Filtros</button>
         </form>
     </div>
 
     <div class="full-catalog-grid">
         {% for moto in motos %}
-        <a href="{{ url_for('moto_detalle', moto_id=moto.id) }}" class="motorcycle-card">
-            <img src="{{ url_for('static', filename=moto.imagen_url) if moto.imagen_url else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ moto.nombre }}">
+        {# CORRECCIÓN: url_for para moto_detalle y usar marca/modelo #}
+        <a href="{{ url_for('main_bp.moto_detalle', moto_id=moto.id) }}" class="motorcycle-card">
+            <img src="{{ url_for('static', filename=moto.imagen_url) if moto.imagen_url else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ moto.marca }} {{ moto.modelo }}">
             <div class="card-content">
                 <h3>{{ moto.marca }} {{ moto.modelo }}</h3>
-                <p>{{ moto.nombre }} ({{ moto.año }})</p>
+                {# CORRECCIÓN: Usar marca y año, no nombre #}
+                <p>{{ moto.marca }} ({{ moto.año }})</p>
                 <span class="price">${{ "{:,.2f}".format(moto.precio) }}</span>
             </div>
         </a>
@@ -66,34 +69,24 @@
     <!-- Controles de Paginación -->
     {% if total_pages > 1 %}
     <div class="pagination-controls">
-        <a href="{{ url_for('catalogo_completo', page=1, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
+        {# CORRECCIÓN: url_for para todas las paginaciones #}
+        <a href="{{ url_for('main_bp.catalogo_completo', page=1, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
            class="pagination-link {% if page == 1 %}disabled{% endif %}">Primera</a>
-        <a href="{{ url_for('catalogo_completo', page=page - 1, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
+        <a href="{{ url_for('main_bp.catalogo_completo', page=page - 1, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
            class="pagination-link {% if page == 1 %}disabled{% endif %}">Anterior</a>
         
         {% for p in range(1, total_pages + 1) %}
-            <a href="{{ url_for('catalogo_completo', page=p, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
+            <a href="{{ url_for('main_bp.catalogo_completo', page=p, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
                class="pagination-link {% if p == page %}active{% endif %}">{{ p }}</a>
         {% endfor %}
 
-        <a href="{{ url_for('catalogo_completo', page=page + 1, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
+        <a href="{{ url_for('main_bp.catalogo_completo', page=page + 1, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
            class="pagination-link {% if page == total_pages %}disabled{% endif %}">Siguiente</a>
-        <a href="{{ url_for('catalogo_completo', page=total_pages, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
+        <a href="{{ url_for('main_bp.catalogo_completo', page=total_pages, search_query=search_query, brand_filter=brand_filter, year_filter=year_filter, price_min=price_min, price_max=price_max) }}" 
            class="pagination-link {% if page == total_pages %}disabled{% endif %}">Última</a>
     </div>
     {% endif %}
 </section>
 
-<script>
-    // Espera a que el DOM esté completamente cargado
-    document.addEventListener('DOMContentLoaded', function() {
-        const clearFiltersButton = document.getElementById('clearFiltersBtn');
-        if (clearFiltersButton) {
-            clearFiltersButton.addEventListener('click', function() {
-                // Redirige a la URL base del catálogo, limpiando todos los filtros
-                window.location.href = "{{ url_for('catalogo_completo') }}";
-            });
-        }
-    });
-</script>
+{# ELIMINADO: Script JS local. La lógica para clearFiltersBtn ahora está en scripts.js #}
 {% endblock %}

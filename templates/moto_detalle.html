@@ -7,18 +7,19 @@
     <div class="container">
         <div class="detail-card">
             <div class="detail-image">
-                <img src="{{ url_for('static', filename=moto.imagen_url) if moto.imagen_url else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ moto.nombre }}">
+                <img src="{{ url_for('static', filename=moto.imagen_url) if moto.imagen_url else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ moto.marca }} {{ moto.modelo }}"> {# CORRECCIÓN: Usar marca y modelo, no nombre #}
             </div>
             <div class="detail-content">
                 <h1>{{ moto.marca }} {{ moto.modelo }}</h1>
-                <p class="moto-name">{{ moto.nombre }}</p>
+                {# ELIMINADO: <p class="moto-name">{{ moto.nombre }}</p> - Ya no existe el campo 'nombre' #}
                 <p class="moto-year">Año: {{ moto.año }}</p>
                 <p class="moto-price">Precio: ${{ "{:,.2f}".format(moto.precio) }}</p>
                 <div class="moto-description">
                     <h2>Descripción:</h2>
                     <p>{{ moto.descripcion }}</p>
                 </div>
-                <a href="{{ url_for('catalogo_completo') }}" class="btn back-btn">Volver al Catálogo</a>
+                {# CORRECCIÓN: url_for para rutas de 'main_bp' #}
+                <a href="{{ url_for('main_bp.catalogo_completo') }}" class="btn back-btn">Volver al Catálogo</a>
             </div>
         </div>
     </div>

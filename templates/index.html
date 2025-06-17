@@ -7,7 +7,8 @@
         <div class="container">
             <h2>Encuentra la Moto de Tus Sueños</h2>
             <p>Descubre nuestra exclusiva colección de motocicletas de alta gama.</p>
-            <a href="{{ url_for('catalogo_completo') }}" class="btn">Ver Catálogo</a>
+            {# CORRECCIÓN: url_for para rutas de 'main_bp' #}
+            <a href="{{ url_for('main_bp.catalogo_completo') }}" class="btn">Ver Catálogo</a>
         </div>
     </section>
 
@@ -18,19 +19,22 @@
                 <div class="swiper-wrapper">
                     {% for moto in motos_carrusel %}
                     <div class="swiper-slide">
-                        <a href="#" class="motorcycle-card">
-                            <img src="{{ url_for('static', filename=moto.imagen_url) if moto.imagen_url else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ moto.nombre }}">
+                        {# CORRECCIÓN: Enlace a moto_detalle con el blueprint, y usar marca/modelo #}
+                        <a href="{{ url_for('main_bp.moto_detalle', moto_id=moto.id) }}" class="motorcycle-card">
+                            <img src="{{ url_for('static', filename=moto.imagen_url) if moto.imagen_url else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ moto.marca }} {{ moto.modelo }}">
                             <div class="card-content">
                                 <h3>{{ moto.marca }} {{ moto.modelo }}</h3>
-                                <p>{{ moto.nombre }} ({{ moto.año }})</p> {# Se sugiere usar nombre y año si están disponibles #}
+                                {# CORRECCIÓN: Usar marca y año, o descripción breve #}
+                                <p>{{ moto.marca }} ({{ moto.año }})</p> 
                                 <span class="price">${{ "{:,.2f}".format(moto.precio) }}</span>
                             </div>
                         </a>
                     </div>
                     {% else %}
                     {# Bloque para mostrar ejemplos estáticos si no hay motos cargadas dinámicamente #}
+                    {# CORRECCIÓN: Asegurarse de que los placeholders usan url_for('static') #}
                     <div class="swiper-slide">
-                        <a href="#" class="motorcycle-card">
+                        <a href="#" class="motorcycle-card"> {# Este enlace estático no apunta a una moto real #}
                             <img src="{{ url_for('static', filename='images/moto1.jpg') }}" alt="Yamaha YZF-R1">
                             <div class="card-content">
                                 <h3>Yamaha YZF-R1</h3>
@@ -68,7 +72,8 @@
                 <div class="swiper-button-prev"></div>
             </div>
             <div class="view-more-container">
-                <a href="{{ url_for('catalogo_completo') }}" class="btn btn-secondary">Ver Catálogo Completo</a>
+                {# CORRECCIÓN: url_for para rutas de 'main_bp' #}
+                <a href="{{ url_for('main_bp.catalogo_completo') }}" class="btn btn-secondary">Ver Catálogo Completo</a>
             </div>
         </div>
     </section>
@@ -193,6 +198,4 @@
             </div>
         </div>
     </section>
-
-
 {% endblock %}

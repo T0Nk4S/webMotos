@@ -2,7 +2,7 @@
 
 {% block title %}
     {% if moto %}
-        Editar Moto: {{ moto.marca }} {{ moto.modelo }} - MotoShop {# CAMBIADO #}
+        Editar Moto: {{ moto.marca }} {{ moto.modelo }} - MotoShop
     {% else %}
         Añadir Nueva Moto - MotoShop
     {% endif %}
@@ -13,7 +13,7 @@
     <div class="form-container">
         <h1>
             {% if moto %}
-                Editar Moto: {{ moto.marca }} {{ moto.modelo }} {# CAMBIADO #}
+                Editar Moto: {{ moto.marca }} {{ moto.modelo }}
             {% else %}
                 Añadir Nueva Moto
             {% endif %}
@@ -21,20 +21,6 @@
 
         <form method="POST" enctype="multipart/form-data">
             {{ form.csrf_token }}
-
-            {# ELIMINADO: Campo de nombre
-            <div class="form-group">
-                {{ form.nombre.label }}
-                {{ form.nombre(class_="form-control") }}
-                {% if form.nombre.errors %}
-                    <div class="help-block">
-                        {% for error in form.nombre.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-            #}
 
             <div class="form-group">
                 {{ form.marca.label }}
@@ -110,15 +96,17 @@
                 {% if moto and moto.imagen_url %}
                     <div class="current-image mt-3">
                         <p>Imagen actual:</p>
-                        <img src="{{ url_for('static', filename=moto.imagen_url) }}" alt="Imagen actual de {{ moto.marca }} {{ moto.modelo }}" class="img-thumbnail"> {# CAMBIADO #}
+                        {# CORRECCIÓN: url_for para imagen actual y usar marca/modelo #}
+                        <img src="{{ url_for('static', filename=moto.imagen_url) }}" alt="Imagen actual de {{ moto.marca }} {{ moto.modelo }}" class="img-thumbnail">
                     </div>
                 {% endif %}
             </div>
 
-            <button type="submit" class="btn submit-btn">Guardar Moto</button> {# Reemplazado form.submit() por un botón HTML estándar si no tienes un SubmitField explícito #}
+            {{ form.submit(class_="btn submit-btn") }}
         </form>
         <div class="mt-3 text-center">
-            <a href="{{ url_for('admin_motos') }}" class="btn btn-secondary">Volver a la Administración</a>
+            {# CORRECCIÓN: url_for para rutas de 'admin_bp' #}
+            <a href="{{ url_for('admin_bp.admin_motos') }}" class="btn btn-secondary">Volver a la Administración</a>
         </div>
     </div>
 </section>

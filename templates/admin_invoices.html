@@ -1,0 +1,58 @@
+{# templates/admin_invoices.html #}
+{# Plantilla para la lista y gestión de facturas en el panel de administración. #}
+
+{% extends "layout.html" %}
+
+{% block title %}Gestión de Facturas - MotoShop{% endblock %}
+
+{% block content %}
+<section class="admin-section container">
+    <div class="admin-header">
+        <h1>Gestión de Facturas</h1>
+        <a href="{{ url_for('invoices_bp.add_invoice') }}" class="btn">Añadir Nueva Factura</a>
+        <a href="{{ url_for('admin_bp.admin_motos') }}" class="btn btn-secondary">Volver a Gestión de Motos</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if invoices %}
+    <div class="table-responsive">
+        <table class="moto-table"> 
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                <tr>
+                    <td data-label="Número:">{{ invoice.invoice_number }}</td>
+                    <td data-label="Fecha:">{{ invoice.invoice_date.strftime('%d-%m-%Y') }}</td>
+                    <td data-label="Cliente:">{{ invoice.customer_name }}</td>
+                    <td data-label="Total:">${{ "{:,.2f}".format(invoice.total_amount) }}</td>
+                    <td data-label="Acciones:" class="moto-actions">
+                        <a href="{{ url_for('invoices_bp.view_invoice', invoice_id=invoice.id) }}" class="btn view-btn">Ver Detalle</a>
+                        <a href="{{ url_for('invoices_bp.print_invoice', invoice_id=invoice.id) }}" class="btn print-btn" target="_blank">Imprimir PDF</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>No hay facturas registradas.</p>
+    {% endif %}
+</section>
+{% endblock %}

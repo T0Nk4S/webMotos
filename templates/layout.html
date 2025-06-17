@@ -10,106 +10,32 @@
 </head>
 <body>
     {% include 'navbar.html' %}
-  <main>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="flash-messages container">
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">{{ message }}</div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
 
-    {% block content %}{% endblock %}
-  </main>
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-  {% include 'footer.html' %}
+        {% block content %}{% endblock %}
+    </main>
 
-  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-  <script>
-    // Script para el efecto de scroll en el header
-    // Este script es el ÚNICO que controla la clase 'scrolled' en el main-header.
-    // Los elementos internos del navbar (UL, LI, ::before) se adaptarán por CSS a su altura.
-    window.addEventListener('scroll', function() {
-      const header = document.querySelector('.main-header');
-      // Si el scroll vertical es mayor a 50px, añade la clase 'scrolled'
-      if (window.scrollY > 50) { 
-        header.classList.add('scrolled');
-      } else {
-        // Si no, remueve la clase 'scrolled'
-        header.classList.remove('scrolled');
-      }
-    });
+    {% include 'footer.html' %}
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     
-    // REMOVIDO: Cualquier script adicional que intentara añadir/quitar la clase 'scrolled'
-    // a elementos como el UL, ya que su comportamiento se controlará por CSS.
-
-    // Script para el carrusel Swiper (ejemplo para index.html)
-    // Solo inicializa si el contenedor del carrusel existe en la página
-    if (document.querySelector('.swiper-container')) {
-      var mySwiper = new Swiper('.swiper-container', {
-        loop: true, // Permite el bucle infinito del carrusel
-        slidesPerView: 1, // Muestra una tarjeta visible a la vez
-        spaceBetween: 30, // Espacio entre cada "slide" (tarjeta de moto)
-        grabCursor: true, // Cambia el cursor a una mano al pasar por el carrusel
-        autoplay: {
-          delay: 90000, // Cada 5 segundos cambia de slide
-          disableOnInteraction: false, // El autoplay no se detiene si el usuario interactúa
-        },
-        navigation: { // Configuración de las flechas de navegación
-          nextEl: '.swiper-button-next', // Selector de la flecha "siguiente"
-          prevEl: '.swiper-button-prev', // Selector de la flecha "anterior"
-        },
-        pagination: { // Configuración de los puntos de paginación
-          el: '.swiper-pagination', // Selector del contenedor de los puntos
-          clickable: true, // Permite hacer clic en los puntos para navegar
-          type: 'bullets', // Tipo de paginación (en este caso, puntos)
-        },
-        breakpoints: { // Adaptación del carrusel a diferentes tamaños de pantalla
-          // Cuando el ancho de la ventana es >= 768px (tablets)
-          768: {
-            slidesPerView: 2, // Muestra 2 tarjetas
-            /*spaceBetween: 40, // Más espacio entre tarjetas*/
-          },
-          // Cuando el ancho de la ventana es >= 1024px (desktops)
-          1024: {
-            slidesPerView: 3, // Muestra 3 tarjetas
-            /*spaceBetween: 50, // Aún más espacio*/
-          },
-        }
-      });
-    }
-
-    // Script para el efecto de hover con cambio de color en logos de marcas (brands-section)
-    const logoItems = document.querySelectorAll('.logo-item');
-    const colors = [
-      '#FF6347', '#FFD700', '#6A5ACD', '#32CD32', '#FF69B4',
-      '#4682B4', '#DA70D6', '#BDB76B', '#00CED1', '#FFA07A'
-    ]; // Colores para el efecto de fondo
-
-    logoItems.forEach((item, index) => {
-      const logoBg = document.createElement('div'); // Crea un div para el fondo de color
-      logoBg.classList.add('logo-bg'); // Añade la clase CSS 'logo-bg'
-      item.prepend(logoBg); // Inserta el div como el primer hijo de .logo-item
-
-      // Añade un evento para cuando el ratón entra en el elemento
-      item.addEventListener('mouseenter', () => {
-        const randomColor = colors[Math.floor(Math.random() * colors.length)]; // Selecciona un color aleatorio
-        item.style.setProperty('--bg-color', randomColor); // Establece la variable CSS personalizada para ese item
-      });
-    });
-
-            // Script para el botón secreto del Admin
-    document.addEventListener('DOMContentLoaded', function() {
-        const adminBtn = document.getElementById('admin-secret-btn');
-        if (adminBtn) {
-            adminBtn.addEventListener('click', function() {
-                // Redirige a la página de login de administrador
-                window.location.href = "{{ url_for('admin_login') }}";
-            });
-        }
-    });
-  </script>
+    {# Pasa la URL de login del administrador a JavaScript como una variable global #}
+    <script>
+        var adminLoginUrl = "{{ url_for('admin_login') }}";
+        // Añadido para depuración: Muestra el valor de la URL en la consola del navegador
+        console.log("[DEBUG JS] adminLoginUrl al inicio:", adminLoginUrl);
+    </script>
+    
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>

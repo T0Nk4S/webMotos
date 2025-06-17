@@ -1,0 +1,51 @@
+{# templates/view_invoice.html #}
+{# Plantilla para mostrar los detalles completos de una factura específica. #}
+
+{% extends "layout.html" %}
+
+{% block title %}Factura #{{ invoice.invoice_number }} - MotoShop{% endblock %}
+
+{% block content %}
+<section class="invoice-detail-section container">
+    <div class="invoice-detail-container">
+        <div class="invoice-header-detail">
+            <h1>Factura #{{ invoice.invoice_number }}</h1>
+            <p>Fecha: {{ invoice.invoice_date.strftime('%d-%m-%Y') }}</p>
+        </div>
+
+        <div class="customer-info">
+            <h2>Información del Cliente</h2>
+            <p><strong>Nombre:</strong> {{ invoice.customer_name }}</p>
+            {% if invoice.customer_address %}
+                <p><strong>Dirección:</strong> {{ invoice.customer_address | nl2br }}</p>
+            {% endif %}
+            {% if invoice.customer_email %}
+                <p><strong>Email:</strong> {{ invoice.customer_email }}</p>
+            {% endif %}
+        </div>
+
+        <div class="invoice-items">
+            <h2>Descripción de Artículos</h2>
+            <p>{{ invoice.items_description | nl2br }}</p>
+        </div>
+
+        <div class="invoice-summary">
+            <p><strong>Subtotal:</strong> ${{ "{:,.2f}".format(invoice.subtotal_amount) }}</p>
+            <p><strong>Impuesto ({{ invoice.tax_rate * 100 }}%):</strong> ${{ "{:,.2f}".format(invoice.tax_amount) }}</p>
+            <h3><strong>Total:</strong> ${{ "{:,.2f}".format(invoice.total_amount) }}</h3>
+        </div>
+
+        {% if invoice.notes %}
+            <div class="invoice-notes">
+                <h2>Notas Adicionales</h2>
+                <p>{{ invoice.notes | nl2br }}</p>
+            </div>
+        {% endif %}
+
+        <div class="invoice-actions mt-4 text-center">
+            <a href="{{ url_for('invoices_bp.print_invoice', invoice_id=invoice.id) }}" class="btn btn-primary" target="_blank">Imprimir Factura (PDF)</a>
+            <a href="{{ url_for('invoices_bp.admin_invoices') }}" class="btn btn-secondary">Volver a Facturas</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

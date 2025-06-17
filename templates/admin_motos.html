@@ -6,8 +6,13 @@
 <section class="admin-section container">
     <div class="admin-header">
         <h1>Gestión de Motocicletas</h1>
-        <a href="{{ url_for('add_moto') }}" class="btn">Añadir Nueva Moto</a>
-        <a href="{{ url_for('export_pdf_motos') }}" class="btn btn-primary">Exportar Catálogo a PDF</a> 
+        {# CORRECCIÓN: url_for para rutas de 'admin_bp' #}
+        <a href="{{ url_for('admin_bp.add_moto') }}" class="btn">Añadir Nueva Moto</a>
+        {# CORRECCIÓN: url_for para rutas de 'admin_bp' - se usa el nombre de la función export_pdf_motos_route #}
+        <a href="{{ url_for('admin_bp.export_pdf_motos_route') }}" class="btn btn-primary">Exportar Catálogo a PDF</a> 
+        {# Botón para gestión de facturas - CORRECCIÓN: url_for para rutas de 'invoices_bp' #}
+        <a href="{{ url_for('invoices_bp.admin_invoices') }}" class="btn btn-info">Gestión de Facturas</a>
+        {# Esta es una ruta global en app.py, no necesita prefijo de blueprint #}
         <a href="{{ url_for('admin_logout') }}" class="btn btn-danger">Cerrar Sesión</a>
     </div>
 
@@ -28,9 +33,8 @@
                 <tr>
                     <th>ID</th>
                     <th>Imagen</th>
-                    <th>Marca</th> {# CAMBIADO: Antes era 'Nombre' #}
-                    <th>Modelo</th> {# CAMBIADO: Antes era 'Marca' #}
-                    {# ELIMINADO: <th>Nombre</th> #}
+                    <th>Marca</th>
+                    <th>Modelo</th>
                     <th>Año</th>
                     <th>Precio</th>
                     <th>Acciones</th>
@@ -41,13 +45,15 @@
                 <tr>
                     <td data-label="ID:">{{ moto.id }}</td>
                     <td data-label="Imagen:"><img src="{{ url_for('static', filename=moto.imagen_url) if moto.imagen_url else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ moto.marca }} {{ moto.modelo }}"></td>
-                    <td data-label="Marca:">{{ moto.marca }}</td> {# CAMBIADO: Ahora muestra la marca #}
-                    <td data-label="Modelo:">{{ moto.modelo }}</td> {# CAMBIADO: Ahora muestra el modelo #}
+                    <td data-label="Marca:">{{ moto.marca }}</td>
+                    <td data-label="Modelo:">{{ moto.modelo }}</td>
                     <td data-label="Año:">{{ moto.año }}</td>
                     <td data-label="Precio:">${{ "{:,.2f}".format(moto.precio) }}</td>
                     <td data-label="Acciones:" class="moto-actions">
-                        <a href="{{ url_for('edit_moto', moto_id=moto.id) }}" class="btn edit-btn">Editar</a>
-                        <form action="{{ url_for('delete_moto', moto_id=moto.id) }}" method="POST" style="display:inline;">
+                        {# CORRECCIÓN: url_for para rutas de 'admin_bp' #}
+                        <a href="{{ url_for('admin_bp.edit_moto', moto_id=moto.id) }}" class="btn edit-btn">Editar</a>
+                        {# CORRECCIÓN: url_for para rutas de 'admin_bp' #}
+                        <form action="{{ url_for('admin_bp.delete_moto', moto_id=moto.id) }}" method="POST" style="display:inline;">
                             {{ form.csrf_token }}
                             <button type="submit" class="btn delete-btn" onclick="return confirm('¿Estás seguro de que quieres eliminar esta moto?')">Eliminar</button>
                         </form>

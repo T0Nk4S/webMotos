@@ -1,0 +1,73 @@
+{# templates/invoice_template.html #}
+{# Plantilla diseñada específicamente para la impresión de facturas (por ejemplo, a PDF desde el navegador). #}
+{# NO extiende layout.html para tener control total sobre los estilos de impresión. #}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura #{{ invoice.invoice_number }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">    
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <div class="logo">
+                <h1>MotoShop</h1>
+                {# Puedes añadir un logo real aquí si lo tienes y lo subes a /static/images/ #}
+                {# <img src="{{ url_for('static', filename='images/logo.png') }}" alt="MotoShop Logo"> #}
+            </div>
+            <div class="company-info">
+                <p>MotoShop S.A.</p>
+                <p>Calle Ficticia 123</p>
+                <p>Ciudad, País</p>
+                <p>Tel: +123 456 7890</p>
+                <p>Email: info@motoshop.com</p>
+            </div>
+        </div>
+
+        <div class="invoice-details">
+            <h2>FACTURA</h2>
+            <p><strong>Nº Factura:</strong> {{ invoice.invoice_number }}</p>
+            <p><strong>Fecha:</strong> {{ invoice.invoice_date.strftime('%d-%m-%Y') }}</p>
+        </div>
+
+        <div class="customer-billing-info">
+            <h3>Facturar a:</h3>
+            <p><strong>{{ invoice.customer_name }}</strong></p>
+            {% if invoice.customer_address %}<p>{{ invoice.customer_address | nl2br }}</p>{% endif %}
+            {% if invoice.customer_email %}<p>{{ invoice.customer_email }}</p>{% endif %}
+        </div>
+
+        <div class="invoice-items-section">
+            <h3>Detalle de Artículos:</h3>
+            <pre>{{ invoice.items_description }}</pre> 
+        </div>
+
+        <div class="invoice-summary">
+            <p>Subtotal: <strong>${{ "{:,.2f}".format(invoice.subtotal_amount) }}</strong></p>
+            <p>Impuesto ({{ invoice.tax_rate * 100 }}%): <strong>${{ "{:,.2f}".format(invoice.tax_amount) }}</strong></p>
+            <p class="total">TOTAL: <strong>${{ "{:,.2f}".format(invoice.total_amount) }}</strong></p>
+        </div>
+
+        {% if invoice.notes %}
+        <div class="invoice-notes">
+            <h3>Notas:</h3>
+            <p>{{ invoice.notes | nl2br }}</p>
+        </div>
+        {% endif %}
+
+        <div class="invoice-footer">
+            <p>Gracias por su compra.</p>
+            <p>MotoShop - Su tienda de confianza.</p>
+        </div>
+    </div>
+
+    {# Botones que solo se muestran en el navegador, no al imprimir. Sin estilos inline. #}
+    <div class="no-print">
+        <button onclick="window.print()">Imprimir a PDF</button>
+        <a href="{{ url_for('invoices_bp.view_invoice', invoice_id=invoice.id) }}">Volver a la Factura</a>
+    </div>
+</body>
+</html>
