@@ -7,7 +7,6 @@
         <div class="container">
             <h2>Encuentra la Moto de Tus Sueños</h2>
             <p>Descubre nuestra exclusiva colección de motocicletas de alta gama.</p>
-            {# CORRECCIÓN: url_for para rutas de 'main_bp' #}
             <a href="{{ url_for('main_bp.catalogo_completo') }}" class="btn">Ver Catálogo</a>
         </div>
     </section>
@@ -19,12 +18,10 @@
                 <div class="swiper-wrapper">
                     {% for moto in motos_carrusel %}
                     <div class="swiper-slide">
-                        {# CORRECCIÓN: Enlace a moto_detalle con el blueprint, y usar marca/modelo #}
                         <a href="{{ url_for('main_bp.moto_detalle', moto_id=moto.id) }}" class="motorcycle-card">
                             <img src="{{ url_for('static', filename=moto.imagen_url) if moto.imagen_url else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ moto.marca }} {{ moto.modelo }}">
                             <div class="card-content">
                                 <h3>{{ moto.marca }} {{ moto.modelo }}</h3>
-                                {# CORRECCIÓN: Usar marca y año, o descripción breve #}
                                 <p>{{ moto.marca }} ({{ moto.año }})</p> 
                                 <span class="price">${{ "{:,.2f}".format(moto.precio) }}</span>
                             </div>
@@ -32,7 +29,6 @@
                     </div>
                     {% else %}
                     {# Bloque para mostrar ejemplos estáticos si no hay motos cargadas dinámicamente #}
-                    {# CORRECCIÓN: Asegurarse de que los placeholders usan url_for('static') #}
                     <div class="swiper-slide">
                         <a href="#" class="motorcycle-card"> {# Este enlace estático no apunta a una moto real #}
                             <img src="{{ url_for('static', filename='images/moto1.jpg') }}" alt="Yamaha YZF-R1">
@@ -72,7 +68,6 @@
                 <div class="swiper-button-prev"></div>
             </div>
             <div class="view-more-container">
-                {# CORRECCIÓN: url_for para rutas de 'main_bp' #}
                 <a href="{{ url_for('main_bp.catalogo_completo') }}" class="btn btn-secondary">Ver Catálogo Completo</a>
             </div>
         </div>
@@ -82,66 +77,68 @@
         <div class="container">
             <h2>Nuestras Marcas Destacadas</h2>
             <div class="logos-grid">
-                <div class="logo-item" data-color="#FF5733"> {# Añadido data-color para efecto JS #}
+                {# MODIFICACIÓN AQUÍ: Añadir el enlace a cada logo, usando 'brand_filter' #}
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='Benelli') }}" class="logo-item" data-color="#FF5733">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/benelli.png') }}" alt="BENELLI">
-                </div>
-                <div class="logo-item" data-color="#007bff">
+                </a>
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='CFMoto') }}" class="logo-item" data-color="#007bff">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/cfmoto.png') }}" alt="CFMOTO">
-                </div>
-                <div class="logo-item" data-color="#28a745">
+                </a>
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='Hero') }}" class="logo-item" data-color="#28a745">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/hero.png') }}" alt="HERO">
-                </div>
-                <div class="logo-item" data-color="#6f42c1">
+                </a>
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='Honda') }}" class="logo-item" data-color="#6f42c1">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/honda.png') }}" alt="HONDA">
-                </div>
-                <div class="logo-item" data-color="#dc3545">
+                </a>
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='Kawasaki') }}" class="logo-item" data-color="#dc3545">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/kawasaki.png') }}" alt="KAWASAKI">
-                </div>
-                <div class="logo-item" data-color="#fd7e14">
+                </a>
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='Keeway') }}" class="logo-item" data-color="#fd7e14">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/keeway.png') }}" alt="KEEWAY">
-                </div>
-                <div class="logo-item" data-color="#17a2b8">
+                </a>
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='KTM') }}" class="logo-item" data-color="#17a2b8">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/ktm.png') }}" alt="KTM">
-                </div>
-                <div class="logo-item" data-color="#e83e8c">
+                </a>
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='Motomel') }}" class="logo-item" data-color="#e83e8c">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/motomel.png') }}" alt="MOTOMEL">
-                </div>
-                <div class="logo-item" data-color="#20c997">
+                </a>
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='Royal Enfield') }}" class="logo-item" data-color="#20c997">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/royalenfield.png') }}" alt="ROYAL-ENFIELD">
-                </div>
-                <div class="logo-item" data-color="#6c757d">
+                </a>
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='Serna') }}" class="logo-item" data-color="#6c757d">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/serna.png') }}" alt="SERNA">
-                </div>
-                <div class="logo-item" data-color="#0056b3">
+                </a>
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='Super Soco') }}" class="logo-item" data-color="#0056b3">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/supersoco.png') }}" alt="SUPERSOCO">
-                </div>
-                <div class="logo-item" data-color="#5a2e6f">
+                </a>
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='Suzuki') }}" class="logo-item" data-color="#5a2e6f">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/suzuki.png') }}" alt="SUZUKI">
-                </div>
-                <div class="logo-item" data-color="#8c2f00">
+                </a>
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='TVS') }}" class="logo-item" data-color="#8c2f00">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/tvs.png') }}" alt="TVS">
-                </div>
-                <div class="logo-item" data-color="#4e4e4e">
+                </a>
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='UM') }}" class="logo-item" data-color="#4e4e4e">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/um.png') }}" alt="EM">
-                </div>
-                <div class="logo-item" data-color="#934d4d">
+                </a>
+                <a href="{{ url_for('main_bp.catalogo_completo', brand_filter='Vespa') }}" class="logo-item" data-color="#934d4d">
                     <div class="logo-bg"></div>
                     <img src="{{ url_for('static', filename='images/logos/vespa.png') }}" alt="VESPA">
-                </div>
+                </a>
+                {# Asegúrate de que los nombres de las marcas en 'brand_filter' coincidan exactamente con los de tu BD #}
             </div>
         </div>
     </section>
