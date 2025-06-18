@@ -1689,7 +1689,111 @@ section {
     margin: 0 10px; /* Espacio entre los botones */
 }
 
-/* --- Responsive Adjustments --- */
+/* ========================================================= */
+/* --- RESPONSIVE STYLES FOR NAVBAR --- */
+/* ========================================================= */
+
+/* General adjustments for smaller screens (e.g., max-width 768px for tablets and mobiles) */
+@media (max-width: 768px) {
+    .main-header {
+        /* Adjust header height if needed for mobile, but 50px is often fine */
+        height: 60px; /* Slightly taller for better touch target */
+    }
+
+    .main-header .container {
+        /* Ensure logo and toggler are aligned */
+        justify-content: space-between;
+        padding: 0 4%; /* Adjust padding for smaller screens */
+    }
+
+    .main-header .logo a {
+        font-size: 1.8rem; /* Slightly smaller logo on mobile */
+    }
+
+    /* Make the hamburger icon visible on small screens */
+    .navbar-toggler {
+        display: block; /* Show the hamburger button */
+        font-size: 1.8rem; /* Larger icon for easier tapping */
+    }
+
+    /* Hide the main navigation links by default on small screens */
+    .navbar-collapse {
+        /* Overlay the menu from top to bottom */
+        position: absolute;
+        top: 60px; /* Position it right below the header (adjust if header height changes) */
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 60px); /* Take remaining height of viewport */
+        background-color: var(--dark-color); /* Dark background for the menu overlay */
+        flex-direction: column; /* Stack menu items vertically */
+        justify-content: flex-start; /* Align items to the top */
+        align-items: center; /* Center items horizontally */
+        transform: translateX(100%); /* Hide menu off-screen to the right by default */
+        transition: transform 0.3s ease-in-out; /* Smooth slide-in/out animation */
+        overflow-y: auto; /* Enable scrolling if content overflows */
+        z-index: 999; /* Ensure it's above page content but below toggler */
+    }
+
+    /* Class added by JavaScript to show the mobile menu */
+    .navbar-collapse.show {
+        transform: translateX(0); /* Slide menu into view */
+    }
+
+    .navbar-collapse ul {
+        flex-direction: column; /* Stack list items vertically */
+        width: 100%; /* Take full width of the menu container */
+        padding: 20px 0; /* Add some vertical padding */
+        height: auto; /* Auto height for content */
+    }
+
+    .navbar-collapse ul li {
+        margin: 0; /* Remove horizontal margin */
+        width: 100%; /* Full width for each menu item */
+        padding: 12px 0; /* Vertical padding for each item */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Separator between items */
+        text-align: center; /* Center text within each item */
+    }
+
+    .navbar-collapse ul li:last-child {
+        border-bottom: none; /* No border for the last item */
+    }
+
+    .navbar-collapse ul li a,
+    .navbar-collapse ul li .btn-admin-secret {
+        font-size: 1.2rem; /* Larger font size for mobile links */
+        height: auto; /* Auto height to fit content */
+        padding: 10px 0; /* Padding within links */
+        width: 100%; /* Full width link area */
+        display: block; /* Make links block-level for full tap area */
+        text-align: center;
+    }
+
+    /* Ensure hover effect for mobile links */
+    .navbar-collapse ul li:hover::before {
+        background: var(--darker-primary-color);
+        opacity: 0.2; /* Lighter opacity for mobile hover effect */
+        transform: scale(1); /* Ensure it covers the whole area */
+    }
+
+    /* Ensure the admin secret button remains invisible but clickable area exists */
+    .btn-admin-secret {
+        width: 100%; /* Ensure it spans the full width on mobile */
+        height: 60px; /* Make it a large enough tap target */
+        /* All other !important transparent rules remain */
+    }
+
+    /* When scrolled on mobile, keep header height small and don't change link font size/height */
+    .main-header.scrolled {
+        height: 60px; /* Keep mobile header compact when scrolled */
+    }
+
+    .main-header.scrolled .navbar-collapse ul li a,
+    .main-header.scrolled .navbar-collapse ul li .btn-admin-secret {
+        font-size: 1.2rem; /* Maintain mobile font size */
+        height: auto; /* Maintain mobile height */
+    }
+}
+
 @media (max-width: 1024px) {
     .main-header .container {
         padding: 0 3%;
