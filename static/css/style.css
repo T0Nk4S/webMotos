@@ -30,7 +30,6 @@ body {
 
 a {
     text-decoration: none;
-    color: var(--primary-color);
 }
 
 ul {
@@ -110,14 +109,14 @@ h1, h2, h3 {
     height: 100%; /* Asegura que el contenedor de nav ocupe la altura del header */
 }
 
-.main-header .logo a {
+.main-header a {
     color: var(--text-on-dark);
     font-size: 2rem; /* Tamaño de logo ligeramente más grande */
     font-weight: bold;
     transition: color 0.4s ease;
 }
 
-.main-header .logo a span {
+.main-header a span {
     color: var(--primary-color);
 }
 
